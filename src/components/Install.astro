@@ -1,0 +1,275 @@
+---
+import type { Dict } from '../i18n/content.ts';
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const i = t.install;
+const f = t.faq;
+---
+
+<section id="installer" class="section" aria-labelledby="install-title">
+  <div class="wrap grid">
+    <div class="intro">
+      <p class="meta label" data-reveal>{i.label}</p>
+      <h2 id="install-title" class="h2" data-reveal>{i.title}</h2>
+      <p class="lead" data-reveal data-d="1">{i.lead}</p>
+    </div>
+    <div class="term" data-reveal data-d="2">
+      <div class="term-head">
+        <span class="meta">~/src</span>
+        <span class="meta">bash</span>
+      </div>
+      <ol class="steps" role="list">
+        {
+          i.steps.map((s, n) => (
+            <li>
+              <span class="meta step">
+                {String(n + 1).padStart(2, '0')} · {s.k}
+              </span>
+              <div class="line">
+                <code>
+                  <span class="prompt" aria-hidden="true">
+                    $
+                  </span>
+                  {s.cmd}
+                </code>
+                <button type="button" class="copy" data-copy={s.cmd} data-copied={i.copied}>
+                  {i.copy}
+                </button>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="note">{i.note}</p>
+    </div>
+  </div>
+</section>
+
+<section id="questions" class="section" aria-labelledby="faq-title">
+  <div class="wrap grid">
+    <div class="intro">
+      <p class="meta label" data-reveal>{f.label}</p>
+      <h2 id="faq-title" class="h2" data-reveal>{f.title}</h2>
+    </div>
+    <div class="faq">
+      {
+        f.items.map((q, n) => (
+          <details>
+            <summary>
+              <span class="meta">Q.{String(n + 1).padStart(3, '0')}</span>
+              <span class="slash" aria-hidden="true">
+                /
+              </span>
+              <span class="q">{q.q}</span>
+              <span class="toggle" aria-hidden="true" />
+            </summary>
+            <p>{q.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) => {
+    const label = b.textContent ?? '';
+    b.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(b.dataset['copy'] ?? '');
+        b.textContent = b.dataset['copied'] ?? 'OK';
+        b.classList.add('done');
+        setTimeout(() => {
+          b.textContent = label;
+          b.classList.remove('done');
+        }, 1600);
+      } catch {
+        /* clipboard refused: the command stays selectable */
+      }
+    });
+  });
+</script>
+
+<style>
+  .intro {
+    grid-column: 1 / span 5;
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+    padding-right: var(--space-6);
+  }
+  .term {
+    grid-column: 6 / span 7;
+    min-width: 0;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    background: var(--bg-surface);
+    overflow: hidden;
+  }
+  .term-head {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-4);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .steps {
+    margin: 0;
+    padding: var(--space-4) var(--space-4) 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-4);
+  }
+  .step {
+    display: block;
+    margin-bottom: var(--space-2);
+  }
+  .line {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--bg-base);
+    border: 1px solid var(--border-subtle);
+  }
+  .line code {
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    font-size: 13.5px;
+    color: var(--text-primary);
+    user-select: all;
+    scrollbar-width: none;
+  }
+  .prompt {
+    color: var(--accent);
+    margin-right: var(--space-2);
+    user-select: none;
+  }
+  .copy {
+    flex: none;
+    height: 28px;
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    transition:
+      background-color var(--motion-fast) var(--ease-standard),
+      color var(--motion-fast) var(--ease-standard);
+  }
+  .copy:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+  }
+  .copy:global(.done) {
+    color: var(--status-connected);
+  }
+  .note {
+    padding: var(--space-4);
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .faq {
+    grid-column: 6 / span 7;
+    border-top: 1px solid var(--line);
+  }
+  details {
+    border-bottom: 1px solid var(--line);
+  }
+  summary {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 60px;
+    padding: var(--space-3) 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .slash {
+    color: var(--border-strong);
+    font-family: var(--font-mono);
+  }
+  .q {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+  summary:hover .q {
+    color: var(--accent);
+  }
+  .toggle {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+  }
+  .toggle::before,
+  .toggle::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 9.5px;
+    width: 10px;
+    height: 1px;
+    background: var(--text-secondary);
+    transition: transform var(--motion-base) var(--ease-standard);
+  }
+  .toggle::after {
+    transform: rotate(90deg);
+  }
+  details[open] .toggle::after {
+    transform: rotate(0deg);
+  }
+  details p {
+    padding: 0 var(--space-7) var(--space-5) calc(var(--space-7) + var(--space-3));
+    color: var(--text-secondary);
+    max-width: 68ch;
+    animation: open var(--motion-base) var(--ease-standard);
+  }
+  @keyframes open {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+  @media (max-width: 1000px) {
+    .intro,
+    .term,
+    .faq {
+      grid-column: 1 / -1;
+    }
+    .intro {
+      padding-right: 0;
+      margin-bottom: var(--space-6);
+    }
+  }
+  @media (max-width: 560px) {
+    .slash {
+      display: none;
+    }
+    summary {
+      grid-template-columns: 1fr auto;
+    }
+    summary .meta {
+      grid-column: 1 / -1;
+    }
+    details p {
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .q {
+      font-size: 13px;
+    }
+  }
+</style>

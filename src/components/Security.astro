@@ -1,0 +1,124 @@
+---
+import type { Dict } from '../i18n/content.ts';
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const s = t.security;
+const alt =
+  t.lang === 'fr'
+    ? 'Alerte bloquante de Portico : clé d’hôte modifiée pour staging, empreintes attendue et reçue, commande ssh-keygen -R, un seul bouton Fermer.'
+    : 'Portico’s blocking alert: host key changed for staging, expected and received fingerprints, the ssh-keygen -R command, a single Close button.';
+---
+
+<section id="securite" class="section" aria-labelledby="security-title">
+  <div class="wrap grid">
+    <div class="intro">
+      <p class="meta label" data-reveal>{s.label}</p>
+      <h2 id="security-title" class="h2" data-reveal>{s.title}</h2>
+      <p class="lead" data-reveal data-d="1">{s.lead}</p>
+    </div>
+
+    <figure class="proof" data-reveal data-d="2">
+      <img
+        src="/shots/hostkey-changed-crop-1200.webp"
+        srcset="/shots/hostkey-changed-crop-720.webp 720w, /shots/hostkey-changed-crop-1200.webp 1200w"
+        sizes="(max-width: 1000px) 92vw, 560px"
+        width="1200"
+        height="982"
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption class="meta">
+        <span class="status-dot" data-s="error" aria-hidden="true"></span>
+        {t.lang === 'fr' ? 'Capture réelle · GUI · Obsidian' : 'Real capture · GUI · Obsidian'}
+      </figcaption>
+    </figure>
+
+    <ul class="items" role="list">
+      {
+        s.items.map((it, i) => (
+          <li data-reveal data-d={i % 3}>
+            <span class="meta">S.{String(i + 1).padStart(2, '0')}</span>
+            <h3>{it.k}</h3>
+            <p>{it.v}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .intro {
+    grid-column: 1 / span 6;
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+    padding-right: var(--space-6);
+  }
+  .proof {
+    grid-column: 8 / span 5;
+    grid-row: 1 / span 2;
+    margin: 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--status-error) 35%, var(--border-subtle));
+    background: var(--bg-surface);
+    align-self: start;
+  }
+  .proof img {
+    width: 100%;
+    height: auto;
+  }
+  .proof figcaption {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-top: 1px solid var(--border-subtle);
+  }
+  .items {
+    grid-column: 1 / span 7;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--space-6);
+    margin: clamp(48px, 6vw, 88px) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .items li {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-5) 0;
+    border-top: 1px solid var(--line);
+    align-content: start;
+  }
+  .items h3 {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .items p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    text-wrap: pretty;
+  }
+  @media (max-width: 1000px) {
+    .intro,
+    .proof,
+    .items {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+    .proof {
+      margin-top: var(--space-7);
+    }
+  }
+  @media (max-width: 600px) {
+    .items {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,163 @@
+---
+import type { Dict } from '../i18n/content.ts';
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const m = t.manifesto;
+---
+
+<section id="principes" class="section marble" aria-labelledby="principes-title">
+  <div class="wrap">
+    <div class="grid head">
+      <p class="meta label col-label" data-reveal>{m.label}</p>
+      <div class="col-main">
+        <h2 id="principes-title" class="h2" data-reveal>{m.title}</h2>
+        <p class="lead" data-reveal data-d="1">{m.body}</p>
+      </div>
+    </div>
+
+    <ol class="principles" role="list">
+      {
+        m.items.map((it, i) => (
+          <li data-reveal data-d={i}>
+            <span class="meta num">P.{String(i + 1).padStart(3, '0')}</span>
+            <h3>{it.k}</h3>
+            <p>{it.v}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="stats" aria-label={t.stats.label}>
+      {
+        t.stats.items.map((s, i) => (
+          <div class="stat" data-reveal data-d={i}>
+            <p class="value" aria-hidden="true">
+              {s.value}
+              {s.unit && <span class="unit">{s.unit}</span>}
+            </p>
+            <p class="stat-label">
+              <span class="sr-only">
+                {s.value}
+                {s.unit}{' '}
+              </span>
+              {s.label}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .head {
+    row-gap: var(--space-5);
+  }
+  .col-label {
+    grid-column: 1 / span 3;
+    padding-top: 0.8em;
+    align-self: start;
+  }
+  .col-main {
+    grid-column: 4 / span 8;
+    display: grid;
+    gap: var(--space-5);
+  }
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin: clamp(64px, 8vw, 120px) 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+  .principles li {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: var(--space-5) var(--space-5) var(--space-6) 0;
+  }
+  .principles li + li {
+    padding-left: var(--space-5);
+    border-left: 1px solid var(--line);
+  }
+  .principles h3 {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    font-weight: 550;
+    letter-spacing: -0.02em;
+    margin-top: var(--space-4);
+  }
+  .principles p {
+    color: var(--marble-muted);
+    font-size: 15px;
+    text-wrap: pretty;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: clamp(64px, 8vw, 120px);
+    border-top: 1px solid var(--marble-fg);
+  }
+  .stat {
+    padding: var(--space-5) var(--space-5) 0 0;
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+  }
+  .value {
+    font-family: var(--font-display);
+    font-size: var(--fs-stat);
+    font-weight: 500;
+    line-height: 0.9;
+    letter-spacing: -0.06em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .unit {
+    font-size: 0.36em;
+    letter-spacing: -0.02em;
+    margin-left: 0.12em;
+    color: var(--marble-muted);
+  }
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--marble-muted);
+    max-width: 28ch;
+  }
+  @media (max-width: 1000px) {
+    .col-label,
+    .col-main {
+      grid-column: 1 / -1;
+    }
+    .principles,
+    .stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .principles li:nth-child(3) {
+      border-left: 0;
+      padding-left: 0;
+    }
+    .principles li:nth-child(n + 3) {
+      border-top: 1px solid var(--line);
+    }
+    .stat:nth-child(n + 3) {
+      padding-top: var(--space-6);
+    }
+  }
+  @media (max-width: 560px) {
+    .principles {
+      grid-template-columns: 1fr;
+    }
+    .principles li + li {
+      border-left: 0;
+      padding-left: 0;
+      border-top: 1px solid var(--line);
+    }
+  }
+</style>

@@ -1,0 +1,286 @@
+---
+import type { Dict } from '../i18n/content.ts';
+import { REPO } from '../i18n/content.ts';
+import { createGrid, gridToHtml } from '../lib/ascii/grid.ts';
+import { renderHero } from '../lib/ascii/hero.ts';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const h = t.hero;
+const still = createGrid(92, 60);
+renderHero(still, { t: 1.3 });
+const stillHtml = gridToHtml(still);
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap grid hero-grid">
+    <div class="copy">
+      <p class="meta label" data-reveal>{h.eyebrow}</p>
+      <h1 id="hero-title" class="title" data-reveal data-d="1">
+        <span>{h.title[0]}</span>
+        <span class="second">{h.title[1]}</span>
+      </h1>
+      <p class="lead" data-reveal data-d="2">{h.lead}</p>
+      <div class="ctas" data-reveal data-d="3">
+        <a class="btn btn-primary" href={REPO} rel="noopener">
+          {h.primary}
+          <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="btn btn-ghost" href="#installer">
+          {h.secondary}
+          <kbd aria-hidden="true">↓</kbd>
+        </a>
+      </div>
+      <ul class="tags" role="list" data-reveal data-d="4">
+        {h.tags.map((tag) => <li>{tag}</li>)}
+      </ul>
+      <a class="scroll meta" href="#principes">
+        <span class="scroll-dot" aria-hidden="true"></span>
+        {h.scroll}
+      </a>
+    </div>
+
+    <figure class="figure" data-hero-box>
+      <div class="frame">
+        <pre class="ascii still" aria-hidden="true" set:html={stillHtml} />
+        <canvas aria-hidden="true" data-hero-canvas></canvas>
+        <span class="sr-only">{h.asciiLabel}</span>
+      </div>
+      <figcaption class="caption">
+        <span class="meta">{h.figure}</span>
+        <span class="meta conn"><span class="status-dot" data-s="connected" aria-hidden="true"></span>{h.figureMeta}</span>
+      </figcaption>
+      <span class="corner tl" aria-hidden="true"></span>
+      <span class="corner tr" aria-hidden="true"></span>
+      <span class="corner bl" aria-hidden="true"></span>
+      <span class="corner br" aria-hidden="true"></span>
+    </figure>
+  </div>
+</section>
+
+<script>
+  import { mountScene } from '../scripts/ascii-canvas.ts';
+  import { renderHero } from '../lib/ascii/hero.ts';
+
+  const box = document.querySelector<HTMLElement>('[data-hero-box] .frame');
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-hero-canvas]');
+  if (box && canvas) {
+    mountScene({
+      canvas,
+      box,
+      fps: 20,
+      fontSize: (w) => (w < 480 ? 8 : w < 760 ? 9.5 : 11),
+      render: (grid, t, p) => renderHero(grid, { t, px: p.x, py: p.y, scale: grid.cols < 60 ? 0.42 : 0.5 }),
+      onFirstFrame: () => box.classList.add('live'),
+    });
+  }
+</script>
+
+<style>
+  .hero {
+    padding-top: calc(var(--nav-h) + var(--space-7) + var(--space-3));
+    padding-bottom: var(--space-7);
+    min-height: min(100svh, 1080px);
+    display: flex;
+    align-items: stretch;
+  }
+  .hero-grid {
+    align-items: stretch;
+    row-gap: var(--space-7);
+  }
+  .copy {
+    grid-column: 1 / span 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-5);
+    padding-block: var(--space-6);
+  }
+  .title {
+    font-family: var(--font-display);
+    font-size: var(--fs-hero);
+    font-weight: 500;
+    line-height: 0.96;
+    letter-spacing: -0.045em;
+    margin-top: var(--space-2);
+  }
+  .title span {
+    display: block;
+  }
+  .title .second {
+    color: var(--text-secondary);
+  }
+  .lead {
+    max-width: 46ch;
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+  .ctas kbd {
+    background: transparent;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    opacity: 0.85;
+  }
+  .scroll {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: auto;
+    padding-top: var(--space-6);
+    width: max-content;
+    transition: color var(--motion-fast) var(--ease-standard);
+  }
+  .scroll:hover {
+    color: var(--text-primary);
+  }
+  .scroll-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    position: relative;
+  }
+  .scroll-dot::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 4px;
+    width: 3px;
+    height: 3px;
+    margin-left: -1.5px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: drip var(--motion-loop) var(--ease-standard) infinite;
+  }
+  @keyframes drip {
+    to {
+      transform: translateY(7px);
+      opacity: 0;
+    }
+  }
+
+  .figure {
+    grid-column: 6 / span 7;
+    position: relative;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 560px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    background: var(--bg-surface);
+    overflow: hidden;
+  }
+  .frame {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+  .frame > * {
+    grid-area: 1 / 1;
+  }
+  .still {
+    font-size: 11px;
+    transition: opacity var(--motion-slow) var(--ease-standard);
+  }
+  .frame canvas {
+    opacity: 0;
+    transition: opacity var(--motion-slow) var(--ease-standard);
+  }
+  .frame:global(.live) .still {
+    opacity: 0;
+  }
+  .frame:global(.live) canvas {
+    opacity: 1;
+  }
+  .caption {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-top: 1px solid var(--border-subtle);
+    background: color-mix(in srgb, var(--bg-base) 40%, var(--bg-surface));
+  }
+  .conn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  .corner {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-color: var(--accent);
+    border-style: solid;
+    border-width: 0;
+    opacity: 0.7;
+  }
+  .tl {
+    top: 10px;
+    left: 10px;
+    border-top-width: 1px;
+    border-left-width: 1px;
+  }
+  .tr {
+    top: 10px;
+    right: 10px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+  }
+  .bl {
+    bottom: 54px;
+    left: 10px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+  }
+  .br {
+    bottom: 54px;
+    right: 10px;
+    border-bottom-width: 1px;
+    border-right-width: 1px;
+  }
+
+  @media (max-width: 1100px) {
+    .copy {
+      grid-column: 1 / -1;
+      padding-block: var(--space-4) 0;
+    }
+    .figure {
+      grid-column: 1 / -1;
+      min-height: min(78vw, 620px);
+    }
+    .scroll {
+      display: none;
+    }
+    .hero {
+      min-height: 0;
+    }
+  }
+  @media (max-width: 560px) {
+    .still {
+      font-size: 7px;
+    }
+    .figure {
+      min-height: 112vw;
+    }
+  }
+</style>

@@ -1,0 +1,8 @@
+{
+  "extends": "astro/tsconfigs/strictest",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist", "captures", "scripts"],
+  "compilerOptions": {
+    "allowImportingTsExtensions": true
+  }
+}

@@ -1,0 +1,210 @@
+---
+import type { Dict } from '../i18n/content.ts';
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const f = t.features;
+const counts = {
+  done: f.items.filter((i) => i.s === 'done').length,
+  wip: f.items.filter((i) => i.s === 'wip').length,
+  next: f.items.filter((i) => i.s === 'next').length,
+};
+---
+
+<section id="fonctionnalites" class="section" aria-labelledby="features-title">
+  <div class="wrap grid">
+    <div class="side">
+      <div class="sticky">
+        <p class="meta label" data-reveal>{f.label}</p>
+        <h2 id="features-title" class="h2" data-reveal>{f.title}</h2>
+        <p class="lead" data-reveal data-d="1">{f.lead}</p>
+        <ul class="legend" role="list" data-reveal data-d="2">
+          {
+            (['done', 'wip', 'next'] as const).map((s) => (
+              <li>
+                <span class="pill" data-s={s}>
+                  {f.legend[s]}
+                </span>
+                <span class="mono count">{String(counts[s]).padStart(2, '0')}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <ol class="list" role="list">
+      {
+        f.items.map((it, i) => (
+          <li class="row" data-s={it.s}>
+            <details>
+              <summary>
+                <span class="meta num">F.{String(i + 1).padStart(3, '0')}</span>
+                <span class="slash" aria-hidden="true">
+                  /
+                </span>
+                <span class="name">{it.t}</span>
+                <span class="pill" data-s={it.s}>
+                  {f.legend[it.s]}
+                </span>
+                <span class="toggle" aria-hidden="true" />
+              </summary>
+              <p class="desc">{it.d}</p>
+            </details>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .side {
+    grid-column: 1 / span 5;
+  }
+  .sticky {
+    position: sticky;
+    top: calc(var(--nav-h) + var(--space-7));
+    display: grid;
+    gap: var(--space-5);
+    padding-right: var(--space-6);
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .count {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+  .list {
+    grid-column: 6 / span 7;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+  .row {
+    border-bottom: 1px solid var(--line);
+  }
+  summary {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto auto;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 64px;
+    padding: var(--space-3) 0;
+    cursor: pointer;
+    list-style: none;
+    transition: color var(--motion-fast) var(--ease-standard);
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+  .slash {
+    color: var(--border-strong);
+    font-family: var(--font-mono);
+  }
+  .name {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+  .row[data-s='next'] .name {
+    color: var(--text-secondary);
+  }
+  summary:hover .name {
+    color: var(--accent);
+  }
+  .toggle {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+  }
+  .toggle::before,
+  .toggle::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 9.5px;
+    width: 10px;
+    height: 1px;
+    background: var(--text-secondary);
+    transition: transform var(--motion-base) var(--ease-standard);
+  }
+  .toggle::after {
+    transform: rotate(90deg);
+  }
+  details[open] .toggle::after {
+    transform: rotate(0deg);
+  }
+  .desc {
+    padding: 0 var(--space-7) var(--space-5) calc(var(--space-7) + var(--space-3));
+    color: var(--text-secondary);
+    max-width: 68ch;
+    text-wrap: pretty;
+    animation: open var(--motion-base) var(--ease-standard);
+  }
+  @keyframes open {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+  @media (max-width: 1000px) {
+    .side,
+    .list {
+      grid-column: 1 / -1;
+    }
+    .sticky {
+      position: static;
+      padding-right: 0;
+      margin-bottom: var(--space-7);
+    }
+  }
+  @media (max-width: 560px) {
+    summary {
+      grid-template-columns: auto 1fr auto;
+      row-gap: var(--space-1);
+    }
+    .slash {
+      display: none;
+    }
+    .name {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      font-size: 13px;
+    }
+    .num {
+      grid-column: 1;
+    }
+    .pill {
+      grid-column: 2;
+      justify-self: end;
+    }
+    .toggle {
+      grid-column: 3;
+    }
+    .desc {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+</style>

@@ -1,0 +1,32 @@
+---
+import Mark from './Mark.astro';
+interface Props {
+  href?: string;
+  label?: string;
+}
+const { href = '/', label = 'Portico' } = Astro.props;
+---
+
+<a class="brand" href={href} aria-label={label}>
+  <Mark size={22} class="brand-mark" />
+  <span class="brand-word" aria-hidden="true">PORTICO</span>
+</a>
+
+<style>
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-primary);
+  }
+  .brand :global(.brand-mark) {
+    color: var(--accent);
+  }
+  .brand-word {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.28em;
+    margin-right: -0.28em;
+  }
+</style>

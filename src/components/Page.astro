@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from './Nav.astro';
+import Hero from './Hero.astro';
+import Principles from './Principles.astro';
+import Interfaces from './Interfaces.astro';
+import Features from './Features.astro';
+import Architecture from './Architecture.astro';
+import Security from './Security.astro';
+import Keyboard from './Keyboard.astro';
+import Roadmap from './Roadmap.astro';
+import Install from './Install.astro';
+import Footer from './Footer.astro';
+import { dict, type Lang } from '../i18n/content.ts';
+
+interface Props {
+  lang: Lang;
+}
+const t = dict[Astro.props.lang];
+---
+
+<Base t={t}>
+  <div id="top"></div>
+  <Nav t={t} />
+  <main id="contenu" tabindex="-1">
+    <Hero t={t} />
+    <Principles t={t} />
+    <Interfaces t={t} />
+    <Features t={t} />
+    <Architecture t={t} />
+    <Security t={t} />
+    <Keyboard t={t} />
+    <Roadmap t={t} />
+    <Install t={t} />
+  </main>
+  <Footer t={t} />
+</Base>
+
+<script>
+  // Reveal on scroll (opacity + transform only; disabled by reduced motion in CSS).
+  const els = document.querySelectorAll<HTMLElement>('[data-reveal]');
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      }
+    },
+    { rootMargin: '0px 0px -8% 0px' },
+  );
+  els.forEach((el) => io.observe(el));
+</script>

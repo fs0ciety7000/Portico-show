@@ -1,0 +1,529 @@
+---
+import type { Dict } from '../i18n/content.ts';
+import { initialState, render } from '../lib/tui/sim.ts';
+import { runsToHtml } from '../scripts/tui.ts';
+import { themeSwatches } from '../lib/themes.ts';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const it = t.interfaces;
+const first = runsToHtml(render(initialState(), 92, 26));
+const isFr = t.lang === 'fr';
+const views = [
+  { id: 'hosts', label: isFr ? 'Hôtes' : 'Hosts', themed: true },
+  { id: 'terminal', label: 'Terminal' },
+  { id: 'terminal-files', label: 'SFTP' },
+  { id: 'palette', label: isFr ? 'Palette ⌘K' : '⌘K palette' },
+  { id: 'tunnels', label: isFr ? 'Tunnels' : 'Tunnels' },
+  { id: 'password', label: isFr ? 'Mot de passe' : 'Password' },
+];
+const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
+---
+
+<link rel="stylesheet" href="/swatches.css" />
+<section id="interfaces" class="section" aria-labelledby="interfaces-title">
+  <div class="wrap">
+    <div class="grid head">
+      <p class="meta label col-label" data-reveal>{it.label}</p>
+      <div class="col-main">
+        <h2 id="interfaces-title" class="h2" data-reveal>
+          <span>{it.title[0]}</span>
+          <span class="dim">{it.title[1]}</span>
+        </h2>
+        <p class="lead" data-reveal data-d="1">{it.lead}</p>
+      </div>
+    </div>
+
+    <div class="showcase" data-showcase>
+      <div class="tabs" role="tablist" aria-label={it.label}>
+        <button type="button" role="tab" id="tab-tui" aria-controls="panel-tui" aria-selected="true" tabindex="0" data-tab="tui">
+          <span class="meta">01</span>
+          {it.tabs.tui}
+        </button>
+        <button type="button" role="tab" id="tab-gui" aria-controls="panel-gui" aria-selected="false" tabindex="-1" data-tab="gui">
+          <span class="meta">02</span>
+          {it.tabs.gui}
+        </button>
+      </div>
+
+      <div class="panel" role="tabpanel" id="panel-tui" aria-labelledby="tab-tui" data-panel="tui">
+        <div class="window">
+          <div class="chrome">
+            <span class="meta">~ portico</span>
+            <span class="meta size" data-tui-size>92×26</span>
+          </div>
+          <div
+            class="tui"
+            tabindex="0"
+            role="application"
+            aria-roledescription={isFr ? 'démo interactive de la TUI' : 'interactive TUI demo'}
+            aria-label={`${it.tabs.tui}. ${it.tuiHint}`}
+            data-owns-keys
+            data-tui
+          >
+            <pre class="screen" data-tui-screen set:html={first} />
+            <p class="focus-hint meta" aria-hidden="true">{it.tuiFocus}</p>
+          </div>
+        </div>
+        <div class="under">
+          <p class="hint">{it.tuiHint}</p>
+          <dl class="specs">
+            {
+              it.tuiSpecs.map(([k, v]) => (
+                <div>
+                  <dt class="meta">{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+      </div>
+
+      <div class="panel" role="tabpanel" id="panel-gui" aria-labelledby="tab-gui" data-panel="gui" hidden>
+        <div class="window gui" data-gui>
+          {
+            views.map((v, i) =>
+              v.themed ? (
+                <div class="shot" data-view={v.id} hidden={i !== 0}>
+                  {(['obsidian', 'basalt', 'travertine'] as const).map((th) => (
+                    <img
+                      class={`themed th-${th}`}
+                      src={src(`${th}-hosts`, 1600)}
+                      srcset={`${src(`${th}-hosts`, 960)} 960w, ${src(`${th}-hosts`, 1600)} 1600w`}
+                      sizes="(max-width: 1440px) 92vw, 1320px"
+                      width="1600"
+                      height="1000"
+                      alt={it.guiAlt}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div class="shot" data-view={v.id} hidden>
+                  <img
+                    src={src(`obsidian-${v.id}`, 1600)}
+                    srcset={`${src(`obsidian-${v.id}`, 960)} 960w, ${src(`obsidian-${v.id}`, 1600)} 1600w`}
+                    sizes="(max-width: 1440px) 92vw, 1320px"
+                    width="1600"
+                    height="1000"
+                    alt={`${it.guiAlt} ${v.label}.`}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              ),
+            )
+          }
+        </div>
+        <div class="under">
+          <div class="views" role="group" aria-label={isFr ? 'Écrans de la GUI' : 'GUI screens'}>
+            {
+              views.map((v, i) => (
+                <button type="button" class="view" aria-pressed={i === 0 ? 'true' : 'false'} data-show={v.id}>
+                  {v.label}
+                </button>
+              ))
+            }
+          </div>
+          <dl class="specs">
+            {
+              it.guiSpecs.map(([k, v]) => (
+                <div>
+                  <dt class="meta">{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="themes" aria-labelledby="themes-title">
+      <h3 id="themes-title" class="meta label">{it.themesTitle}</h3>
+      <div class="theme-list" role="radiogroup" aria-labelledby="themes-title">
+        {
+          it.themes.map((th) => (
+            <button type="button" role="radio" class="theme-card" data-set-theme={th.id} aria-checked="false">
+              <span class="chips" aria-hidden="true">
+                {themeSwatches(th.id as 'obsidian').map((_, n) => (
+                  <i class={`sw-${th.id}-${n}`} />
+                ))}
+              </span>
+              <span class="tname">{th.name}</span>
+              <span class="tnote">{th.note}</span>
+            </button>
+          ))
+        }
+      </div>
+      <p class="themes-note">{it.themesNote}</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { mountTui } from '../scripts/tui.ts';
+  import { currentTheme, setTheme, type Theme } from '../scripts/theme.ts';
+
+  const tuiRoot = document.querySelector<HTMLElement>('[data-tui]');
+  if (tuiRoot) mountTui(tuiRoot);
+
+  // Tabs (roving tabindex, arrow keys).
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-showcase] [role="tab"]')];
+  const select = (tab: HTMLButtonElement, focus = false) => {
+    tabs.forEach((t) => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      const panel = document.querySelector<HTMLElement>(`[data-panel="${t.dataset['tab']}"]`);
+      if (panel) panel.hidden = !on;
+    });
+    if (focus) tab.focus();
+  };
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(tab));
+    tab.addEventListener('keydown', (e) => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      const next = tabs[(i + d + tabs.length) % tabs.length];
+      if (next) select(next, true);
+    });
+  });
+
+  // GUI views.
+  const viewButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-show]')];
+  viewButtons.forEach((b) =>
+    b.addEventListener('click', () => {
+      viewButtons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      document.querySelectorAll<HTMLElement>('[data-gui] [data-view]').forEach((v) => {
+        v.hidden = v.dataset['view'] !== b.dataset['show'];
+      });
+    }),
+  );
+
+  // Theme cards.
+  const cards = [...document.querySelectorAll<HTMLButtonElement>('[data-set-theme]')];
+  const sync = () => cards.forEach((c) => c.setAttribute('aria-checked', String(c.dataset['setTheme'] === currentTheme())));
+  cards.forEach((c) => c.addEventListener('click', () => setTheme(c.dataset['setTheme'] as Theme)));
+  window.addEventListener('portico:theme', sync);
+  sync();
+</script>
+
+<style>
+  .col-label {
+    grid-column: 1 / span 3;
+    padding-top: 0.8em;
+    align-self: start;
+  }
+  .col-main {
+    grid-column: 4 / span 8;
+    display: grid;
+    gap: var(--space-5);
+  }
+  .h2 span {
+    display: block;
+  }
+  .dim {
+    color: var(--text-muted);
+  }
+  .showcase {
+    margin-top: clamp(56px, 7vw, 104px);
+  }
+  .tabs {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+  [role='tab'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    height: 40px;
+    padding-inline: var(--space-4);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    transition:
+      background-color var(--motion-fast) var(--ease-standard),
+      color var(--motion-fast) var(--ease-standard),
+      border-color var(--motion-fast) var(--ease-standard);
+  }
+  [role='tab']:hover {
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+  }
+  [role='tab'][aria-selected='true'] {
+    color: var(--text-primary);
+    background: var(--bg-selected);
+    border-color: var(--border-strong);
+  }
+  [role='tab'][aria-selected='true'] .meta {
+    color: var(--accent);
+  }
+  .panel {
+    animation: fade var(--motion-slow) var(--ease-standard);
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+  .window {
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    background: var(--bg-base);
+    overflow: hidden;
+    box-shadow: var(--shadow-raised);
+  }
+  .chrome {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-4);
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+  }
+  .tui {
+    position: relative;
+    container-type: inline-size;
+    padding: clamp(8px, 1.4vw, 20px);
+    background: var(--bg-surface);
+    cursor: text;
+    outline: none;
+  }
+  .tui:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--accent);
+  }
+  .screen {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: min(14px, calc(100cqi / var(--cols, 92) / 0.6));
+    line-height: 1.22;
+    white-space: pre;
+    color: var(--text-primary);
+    font-variant-ligatures: none;
+    user-select: none;
+  }
+  .screen :global(.a) {
+    color: var(--accent);
+  }
+  .screen :global(.b) {
+    color: var(--border-subtle);
+  }
+  .screen :global(.p) {
+    color: var(--text-primary);
+    font-weight: 700;
+  }
+  .screen :global(.s) {
+    color: var(--text-secondary);
+  }
+  .screen :global(.m) {
+    color: var(--text-muted);
+  }
+  .screen :global(.sel) {
+    background: var(--bg-selected);
+  }
+  .screen :global(.ov) {
+    background: var(--bg-overlay);
+  }
+  .screen :global(.inv) {
+    background: var(--text-secondary);
+    color: var(--bg-base);
+    font-weight: 700;
+  }
+  .screen :global(.kbd) {
+    background: var(--bg-elevated);
+    color: var(--accent);
+  }
+  .screen :global(.cursor) {
+    background: var(--accent);
+    color: var(--bg-base);
+  }
+  .screen :global(.st-idle) {
+    color: var(--status-idle);
+  }
+  .screen :global(.st-connecting) {
+    color: var(--status-connecting);
+  }
+  .screen :global(.st-authenticating) {
+    color: var(--status-authenticating);
+  }
+  .screen :global(.st-connected) {
+    color: var(--status-connected);
+  }
+  .screen :global(.st-error) {
+    color: var(--status-error);
+  }
+  .focus-hint {
+    position: absolute;
+    right: var(--space-4);
+    bottom: var(--space-3);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-overlay);
+    border: 1px solid var(--border-subtle);
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity var(--motion-base) var(--ease-standard),
+      transform var(--motion-base) var(--ease-standard);
+    pointer-events: none;
+  }
+  .tui:hover:not(:focus) .focus-hint {
+    opacity: 1;
+    transform: none;
+  }
+  .under {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+  }
+  .hint {
+    color: var(--text-secondary);
+    font-size: 15px;
+    max-width: 52ch;
+  }
+  .specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5) var(--space-6);
+    margin: 0;
+  }
+  .specs div {
+    display: grid;
+    gap: 2px;
+  }
+  .specs dd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+  }
+  .gui {
+    aspect-ratio: 16 / 10;
+    background: var(--bg-surface);
+  }
+  .shot,
+  .shot img {
+    width: 100%;
+    height: 100%;
+  }
+  .shot img {
+    object-fit: cover;
+    object-position: top left;
+  }
+  .themed {
+    display: none;
+  }
+  :global(html[data-theme='obsidian']) .th-obsidian,
+  :global(html[data-theme='basalt']) .th-basalt,
+  :global(html[data-theme='travertine']) .th-travertine {
+    display: block;
+  }
+  .views {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .view {
+    height: 32px;
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border-subtle);
+    font-size: var(--fs-small);
+    color: var(--text-secondary);
+    transition:
+      background-color var(--motion-fast) var(--ease-standard),
+      color var(--motion-fast) var(--ease-standard);
+  }
+  .view:hover {
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+  }
+  .view[aria-pressed='true'] {
+    background: var(--text-primary);
+    color: var(--bg-base);
+    border-color: var(--text-primary);
+  }
+  .themes {
+    margin-top: clamp(64px, 8vw, 112px);
+    display: grid;
+    gap: var(--space-5);
+  }
+  .theme-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+  .theme-card {
+    display: grid;
+    gap: var(--space-2);
+    text-align: left;
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+    transition:
+      border-color var(--motion-fast) var(--ease-standard),
+      background-color var(--motion-fast) var(--ease-standard);
+  }
+  .theme-card:hover {
+    background: var(--bg-elevated);
+  }
+  .theme-card[aria-checked='true'] {
+    border-color: var(--accent);
+  }
+  .chips {
+    display: flex;
+    gap: 6px;
+    margin-bottom: var(--space-3);
+  }
+  .chips i {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid rgb(255 255 255 / 0.08);
+  }
+  .tname {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    font-weight: 550;
+    letter-spacing: -0.02em;
+  }
+  .tnote {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .themes-note {
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+  @media (max-width: 1000px) {
+    .col-label,
+    .col-main {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 720px) {
+    .theme-list {
+      grid-template-columns: 1fr;
+    }
+    .tabs [role='tab'] {
+      flex: 1;
+      justify-content: center;
+      padding-inline: var(--space-2);
+    }
+  }
+</style>

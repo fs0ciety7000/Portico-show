@@ -1,0 +1,173 @@
+---
+import type { Dict } from '../i18n/content.ts';
+import { REPO } from '../i18n/content.ts';
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const k = t.keyboard;
+/** Map a displayed key to the KeyboardEvent.key values that light it up. */
+const keyMap: Record<string, string> = {
+  '↵': 'Enter',
+  '␣': ' ',
+  Space: ' ',
+  Ctrl: 'Control',
+  '⌘': 'Meta',
+  '⇧': 'Shift',
+  PgUp: 'PageUp',
+  '1…9': '1',
+};
+const match = (key: string) => (keyMap[key] ?? key).toLowerCase();
+---
+
+<section id="clavier" class="section marble" aria-labelledby="kbd-title">
+  <div class="wrap">
+    <div class="grid head">
+      <p class="meta label col-label" data-reveal>{k.label}</p>
+      <div class="col-main">
+        <h2 id="kbd-title" class="h2" data-reveal>{k.title}</h2>
+        <p class="lead" data-reveal data-d="1">{k.lead}</p>
+      </div>
+    </div>
+
+    <div class="groups" data-keys>
+      {
+        k.groups.map((g, gi) => (
+          <div class="group" data-reveal data-d={gi}>
+            <h3 class="meta">{g.name}</h3>
+            <ul role="list">
+              {g.keys.map(([keys, label]) => (
+                <li>
+                  <span class="combo">
+                    {keys.map((key) => (
+                      <kbd class="cap" data-key={match(key)}>
+                        {key}
+                      </kbd>
+                    ))}
+                  </span>
+                  <span class="what">{label}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+    <div class="foot">
+      <p class="tip mono">{k.hint}</p>
+      <a class="more" href={`${REPO}/blob/main/docs/KEYBINDINGS.md`} rel="noopener">{k.more} <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-keys]');
+  if (root) {
+    const caps = [...root.querySelectorAll<HTMLElement>('[data-key]')];
+    const light = (key: string, on: boolean) => {
+      const k = key.toLowerCase();
+      caps.forEach((c) => {
+        if (c.dataset['key'] === k || (k >= '1' && k <= '9' && c.dataset['key'] === '1')) c.classList.toggle('down', on);
+      });
+    };
+    let inView = false;
+    new IntersectionObserver(([e]) => (inView = e?.isIntersecting ?? false)).observe(root);
+    window.addEventListener('keydown', (e) => {
+      if (inView && !(e.target as HTMLElement).closest?.('[data-owns-keys], input, textarea')) light(e.key, true);
+    });
+    window.addEventListener('keyup', (e) => light(e.key, false));
+    window.addEventListener('blur', () => caps.forEach((c) => c.classList.remove('down')));
+  }
+</script>
+
+<style>
+  .col-label {
+    grid-column: 1 / span 3;
+    padding-top: 0.8em;
+    align-self: start;
+  }
+  .col-main {
+    grid-column: 4 / span 8;
+    display: grid;
+    gap: var(--space-5);
+  }
+  .groups {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-6);
+    margin-top: clamp(56px, 7vw, 104px);
+  }
+  .group h3 {
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--marble-fg);
+  }
+  .group ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .group li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    min-height: 52px;
+    border-bottom: 1px solid var(--line);
+  }
+  .combo {
+    display: inline-flex;
+    gap: 4px;
+    min-width: 108px;
+  }
+  .cap {
+    min-width: 30px;
+    height: 30px;
+    padding: 0 8px;
+    display: inline-grid;
+    place-items: center;
+    font-size: 12px;
+    color: var(--marble-fg);
+    background: color-mix(in srgb, var(--marble-bg) 88%, var(--marble-fg));
+    border: 1px solid color-mix(in srgb, var(--marble-fg) 22%, var(--marble-bg));
+    border-bottom-width: 3px;
+    border-radius: 6px;
+    transition:
+      transform var(--motion-fast) var(--ease-standard),
+      background-color var(--motion-fast) var(--ease-standard),
+      color var(--motion-fast) var(--ease-standard),
+      border-color var(--motion-fast) var(--ease-standard);
+  }
+  .cap:global(.down) {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+    background: var(--marble-fg);
+    color: var(--marble-bg);
+    border-color: var(--marble-fg);
+  }
+  .what {
+    font-size: 15px;
+  }
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+  }
+  .tip {
+    font-size: var(--text-sm);
+    color: var(--marble-muted);
+  }
+  .more {
+    font-weight: 550;
+    border-bottom: 1px solid currentColor;
+  }
+  @media (max-width: 1000px) {
+    .col-label,
+    .col-main {
+      grid-column: 1 / -1;
+    }
+    .groups {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

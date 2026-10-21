@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://portico.dessenius.be/sitemap-index.xml

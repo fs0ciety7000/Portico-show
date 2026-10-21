@@ -1,0 +1,317 @@
+---
+import Brand from './Brand.astro';
+import type { Dict } from '../i18n/content.ts';
+import { REPO } from '../i18n/content.ts';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const home = t.lang === 'fr' ? '/' : '/en/';
+---
+
+<header class="nav" data-nav>
+  <nav class="bar" aria-label={t.nav.label}>
+    <Brand href={home} />
+    <ul class="links" role="list">
+      {
+        t.nav.links.map(([href, label]) => (
+          <li>
+            <a href={href} data-navlink>
+              {label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="actions">
+      <button class="theme" type="button" data-theme-toggle title={t.nav.themeHint} aria-label={t.nav.themeHint}>
+        <span class="swatch" aria-hidden="true"></span>
+        <span class="theme-name" data-theme-name>Obsidian</span>
+        <kbd aria-hidden="true">t</kbd>
+      </button>
+      <a class="lang" href={t.nav.langSwitch.href} hreflang={t.lang === 'fr' ? 'en' : 'fr'} title={t.nav.langSwitch.title}>
+        {t.nav.langSwitch.label}
+      </a>
+      <a class="gh" href={REPO} rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"
+          ><path
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+          ></path></svg
+        >
+        <span>{t.nav.github}</span>
+      </a>
+      <button class="menu" type="button" aria-expanded="false" aria-controls="sheet" data-menu>
+        <span class="sr-only" data-menu-label>{t.nav.menu}</span>
+        <span class="burger" aria-hidden="true"></span>
+      </button>
+    </div>
+  </nav>
+  <div class="sheet" id="sheet" hidden data-sheet>
+    <ul role="list">
+      {
+        t.nav.links.map(([href, label], i) => (
+          <li>
+            <a href={href} data-sheetlink>
+              <span class="meta">{String(i + 1).padStart(2, '0')}</span>
+              {label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</header>
+
+<script>
+  import { cycleTheme, currentTheme, isTyping } from '../scripts/theme.ts';
+
+  const NAMES = { obsidian: 'Obsidian', basalt: 'Basalt', travertine: 'Travertine' } as const;
+  const nameEl = document.querySelector<HTMLElement>('[data-theme-name]');
+  const paint = () => {
+    if (nameEl) nameEl.textContent = NAMES[currentTheme()];
+  };
+  paint();
+  window.addEventListener('portico:theme', paint);
+  document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => cycleTheme());
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 't' && !e.metaKey && !e.ctrlKey && !e.altKey && !isTyping(e)) cycleTheme();
+  });
+
+  // Elevated bar once the page scrolls.
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+  const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 24);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Mobile sheet.
+  const btn = document.querySelector<HTMLButtonElement>('[data-menu]');
+  const sheet = document.querySelector<HTMLElement>('[data-sheet]');
+  const label = document.querySelector<HTMLElement>('[data-menu-label]');
+  const menuText = label?.textContent ?? 'Menu';
+  const closeText = document.documentElement.lang === 'fr' ? 'Fermer' : 'Close';
+  const setOpen = (open: boolean) => {
+    if (!btn || !sheet) return;
+    btn.setAttribute('aria-expanded', String(open));
+    sheet.hidden = !open;
+    nav?.classList.toggle('open', open);
+    if (label) label.textContent = open ? closeText : menuText;
+    if (open) sheet.querySelector<HTMLElement>('a')?.focus();
+  };
+  btn?.addEventListener('click', () => setOpen(btn.getAttribute('aria-expanded') !== 'true'));
+  sheet?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && btn?.getAttribute('aria-expanded') === 'true') {
+      setOpen(false);
+      btn.focus();
+    }
+  });
+
+  // Current section highlight.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-navlink]')];
+  const targets = links
+    .map((a) => document.querySelector<HTMLElement>(a.getAttribute('href') ?? ''))
+    .filter((el): el is HTMLElement => el !== null);
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const en of entries) {
+        if (!en.isIntersecting) continue;
+        const id = `#${en.target.id}`;
+        links.forEach((a) => {
+          if (a.getAttribute('href') === id) a.setAttribute('aria-current', 'true');
+          else a.removeAttribute('aria-current');
+        });
+      }
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  );
+  targets.forEach((el) => io.observe(el));
+</script>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: var(--space-3) 0 auto;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-inline: var(--space-3);
+    pointer-events: none;
+  }
+  .bar {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    height: var(--nav-h);
+    width: min(100%, 1120px);
+    padding-inline: var(--space-4) var(--space-2);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--bg-surface) 72%, transparent);
+    border: 1px solid color-mix(in srgb, var(--border-subtle) 70%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    transition:
+      background-color var(--motion-base) var(--ease-standard),
+      box-shadow var(--motion-base) var(--ease-standard);
+  }
+  .nav.scrolled .bar,
+  .nav.open .bar {
+    background: color-mix(in srgb, var(--bg-overlay) 88%, transparent);
+    box-shadow: var(--shadow-raised);
+  }
+  .links {
+    display: flex;
+    gap: var(--space-1);
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+  }
+  .links a {
+    display: block;
+    padding: 6px 10px;
+    border-radius: var(--radius-md);
+    font-size: var(--fs-small);
+    color: var(--text-secondary);
+    transition: color var(--motion-fast) var(--ease-standard), background-color var(--motion-fast) var(--ease-standard);
+  }
+  .links a:hover {
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+  }
+  .links a[aria-current] {
+    color: var(--text-primary);
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-left: auto;
+  }
+  .links + .actions {
+    margin-left: 0;
+  }
+  .theme,
+  .lang,
+  .gh {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: 36px;
+    padding-inline: 10px;
+    border-radius: var(--radius-md);
+    font-size: var(--fs-small);
+    color: var(--text-secondary);
+    transition: color var(--motion-fast) var(--ease-standard), background-color var(--motion-fast) var(--ease-standard);
+  }
+  .theme:hover,
+  .lang:hover {
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+  }
+  .swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 2px var(--bg-elevated);
+  }
+  .lang {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: 0.06em;
+  }
+  .gh {
+    color: var(--text-on-accent);
+    background: var(--accent);
+    font-weight: 550;
+    margin-left: var(--space-1);
+  }
+  .gh:hover {
+    background: var(--accent-strong);
+  }
+  .menu {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    place-items: center;
+  }
+  .burger,
+  .burger::before {
+    display: block;
+    width: 16px;
+    height: 1.5px;
+    background: var(--text-primary);
+    transition: transform var(--motion-base) var(--ease-standard);
+  }
+  .burger {
+    position: relative;
+    transform: translateY(-3px);
+  }
+  .burger::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+  }
+  .nav.open .burger {
+    transform: translateY(0) rotate(45deg);
+  }
+  .nav.open .burger::before {
+    transform: translateY(-6px) rotate(-90deg);
+  }
+  .sheet {
+    pointer-events: auto;
+    width: min(100%, 1120px);
+    margin-top: var(--space-2);
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+    background: var(--bg-overlay);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-overlay);
+    animation: drop var(--motion-slow) var(--ease-standard);
+  }
+  .sheet ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sheet a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-3);
+    border-radius: var(--radius-md);
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: -0.02em;
+  }
+  .sheet a:hover {
+    background: var(--bg-elevated);
+  }
+  @keyframes drop {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+  @media (max-width: 1040px) {
+    .links {
+      display: none;
+    }
+    .menu {
+      display: grid;
+    }
+  }
+  @media (max-width: 560px) {
+    .theme-name,
+    .theme kbd,
+    .gh span {
+      display: none;
+    }
+    .bar {
+      gap: var(--space-2);
+    }
+  }
+</style>
