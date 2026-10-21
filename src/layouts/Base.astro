@@ -6,8 +6,11 @@ import { REPO } from '../i18n/content.ts';
 
 interface Props {
   t: Dict;
+  /** Error pages: no canonical, hreflang or structured data, and not indexed. */
+  noindex?: boolean;
+  title?: string;
 }
-const { t } = Astro.props;
+const { t, noindex = false, title } = Astro.props;
 const site = Astro.site ?? new URL('https://portico.dessenius.be');
 const path = t.lang === 'fr' ? '/' : '/en/';
 const canonical = new URL(path, site).href;
@@ -16,25 +19,40 @@ const alt = {
   en: new URL('/en/', site).href,
 };
 const og = new URL(t.lang === 'fr' ? '/og-fr.png' : '/og-en.png', site).href;
+const author = {
+  '@type': 'Person',
+  '@id': `${site.origin}/#author`,
+  name: 'Nicolas Dessenius',
+  worksFor: { '@type': 'Organization', name: 'Cardor Interactive', url: 'https://interactive.cardormedia.com' },
+};
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: 'Portico',
-  applicationCategory: 'DeveloperApplication',
-  operatingSystem: 'macOS, Linux',
-  description: t.meta.description,
-  url: canonical,
-  codeRepository: REPO,
-  license: 'https://opensource.org/licenses/MIT',
-  programmingLanguage: 'Rust',
-  inLanguage: t.lang,
-  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-  author: {
-    '@type': 'Person',
-    name: 'Nicolas Dessenius',
-    worksFor: { '@type': 'Organization', name: 'Cardor Interactive', url: 'https://interactive.cardormedia.com' },
-  },
+  '@graph': [
+    {
+      '@type': 'SoftwareApplication',
+      '@id': `${site.origin}/#app`,
+      name: 'Portico',
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'macOS, Linux',
+      description: t.meta.description,
+      url: canonical,
+      inLanguage: t.lang,
+      license: 'https://opensource.org/licenses/MIT',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+      author,
+    },
+    {
+      '@type': 'SoftwareSourceCode',
+      name: 'Portico',
+      codeRepository: REPO,
+      programmingLanguage: 'Rust',
+      license: 'https://opensource.org/licenses/MIT',
+      targetProduct: { '@id': `${site.origin}/#app` },
+      author,
+    },
+  ],
 };
+const ogAlt = t.lang === 'fr' ? 'Portico : le logo dessiné en caractères ASCII, et le titre « Le portique de vos serveurs ».' : 'Portico: the logo drawn in ASCII characters, and the title “The gateway to your servers”.';
 ---
 
 <!doctype html>
@@ -42,12 +60,19 @@ const jsonLd = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{t.meta.title}</title>
+    <title>{title ?? t.meta.title}</title>
     <meta name="description" content={t.meta.description} />
-    <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="fr" href={alt.fr} />
-    <link rel="alternate" hreflang="en" href={alt.en} />
-    <link rel="alternate" hreflang="x-default" href={alt.fr} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {
+      !noindex && (
+        <>
+          <link rel="canonical" href={canonical} />
+          <link rel="alternate" hreflang="fr" href={alt.fr} />
+          <link rel="alternate" hreflang="en" href={alt.en} />
+          <link rel="alternate" hreflang="x-default" href={alt.fr} />
+        </>
+      )
+    }
     <meta name="theme-color" content="#0b0c0e" />
     <meta name="color-scheme" content="dark" />
     <meta name="author" content="Nicolas Dessenius · Cardor Interactive" />
@@ -56,7 +81,6 @@ const jsonLd = {
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="preload" href="/fonts/geist.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
 
     <meta property="og:type" content="website" />
@@ -67,11 +91,15 @@ const jsonLd = {
     <meta property="og:image" content={og} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content={ogAlt} />
+    <meta property="og:locale:alternate" content={t.lang === 'fr' ? 'en_US' : 'fr_BE'} />
     <meta property="og:locale" content={t.locale} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={t.meta.title} />
     <meta name="twitter:description" content={t.meta.description} />
     <meta name="twitter:image" content={og} />
+    <meta name="twitter:image:alt" content={ogAlt} />
 
     <script is:inline>
       (function () {
@@ -83,7 +111,7 @@ const jsonLd = {
         } catch (e) {}
       })();
     </script>
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    {!noindex && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
   <body>
     <a class="skip" href="#contenu">{t.skip}</a>

@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://portico.dessenius.be',
   trailingSlash: 'always',
-  build: { format: 'directory', inlineStylesheets: 'auto' },
+  build: { format: 'directory', inlineStylesheets: 'always' },
   compressHTML: true,
   // Hashes every inline script and style into a <meta> CSP: no 'unsafe-inline' for scripts.
   security: {
@@ -28,7 +28,7 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      i18n: { defaultLocale: 'fr', locales: { fr: 'fr-BE', en: 'en' } },
+      i18n: { defaultLocale: 'fr', locales: { fr: 'fr', en: 'en' } },
     }),
   ],
 });

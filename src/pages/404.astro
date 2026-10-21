@@ -5,15 +5,15 @@ import { dict } from '../i18n/content.ts';
 const t = dict.fr;
 ---
 
-<Base t={t}>
+<Base t={t} noindex title="404 · Portico">
   <main id="contenu" class="nf">
     <Brand />
     <pre class="ascii" aria-hidden="true">
 <b class="t4">  ssh: Could not resolve hostname</b>
 <b class="t3">  ──────────────────────────────── 404</b></pre>
     <h1>Cette page n’existe pas.</h1>
-    <p class="muted">This page does not exist.</p>
-    <p class="links"><a class="btn btn-primary" href="/">Accueil</a><a class="btn btn-ghost" href="/en/">Home</a></p>
+    <p class="muted" lang="en">This page does not exist.</p>
+    <p class="links"><a class="btn btn-primary" href="/">Accueil</a><a class="btn btn-ghost" href="/en/" lang="en">Home</a></p>
   </main>
 </Base>
 

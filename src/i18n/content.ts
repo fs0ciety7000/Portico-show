@@ -14,7 +14,7 @@ const fr = {
   meta: {
     title: 'Portico · Gestionnaire de sessions SSH local-first, en Rust',
     description:
-      'Portico est un client SSH local-first, rapide et keyboard-first pour macOS et Linux. Un moteur Rust, deux interfaces : une TUI et une GUI. Votre ~/.ssh/config reste la source de vérité.',
+      'Client SSH local-first et keyboard-first pour macOS et Linux. Un moteur Rust, une TUI et une GUI. Votre ~/.ssh/config reste la source de vérité.',
   },
   skip: 'Aller au contenu',
   nav: {
@@ -260,7 +260,7 @@ const en: Dict = {
   meta: {
     title: 'Portico · Local-first SSH session manager, written in Rust',
     description:
-      'Portico is a local-first, fast, keyboard-first SSH client for macOS and Linux. One Rust engine, two interfaces: a TUI and a GUI. Your ~/.ssh/config stays the source of truth.',
+      'A local-first, keyboard-first SSH client for macOS and Linux. One Rust engine, a TUI and a GUI. Your ~/.ssh/config stays the source of truth.',
   },
   skip: 'Skip to content',
   nav: {

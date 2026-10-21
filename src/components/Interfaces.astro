@@ -2,7 +2,6 @@
 import type { Dict } from '../i18n/content.ts';
 import { initialState, render } from '../lib/tui/sim.ts';
 import { runsToHtml } from '../scripts/tui.ts';
-import { themeSwatches } from '../lib/themes.ts';
 
 interface Props {
   t: Dict;
@@ -22,7 +21,6 @@ const views = [
 const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
 ---
 
-<link rel="stylesheet" href="/swatches.css" />
 <section id="interfaces" class="section" aria-labelledby="interfaces-title">
   <div class="wrap">
     <div class="grid head">
@@ -148,11 +146,12 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
       <div class="theme-list" role="radiogroup" aria-labelledby="themes-title">
         {
           it.themes.map((th) => (
-            <button type="button" role="radio" class="theme-card" data-set-theme={th.id} aria-checked="false">
-              <span class="chips" aria-hidden="true">
-                {themeSwatches(th.id as 'obsidian').map((_, n) => (
-                  <i class={`sw-${th.id}-${n}`} />
-                ))}
+            <button type="button" role="radio" class="theme-card" data-set-theme={th.id} aria-checked="false" tabindex="-1">
+              <span class="chips" data-theme={th.id} aria-hidden="true">
+                <i />
+                <i />
+                <i />
+                <i />
               </span>
               <span class="tname">{th.name}</span>
               <span class="tnote">{th.note}</span>
@@ -188,6 +187,12 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
     tab.addEventListener('click', () => select(tab));
     tab.addEventListener('keydown', (e) => {
       const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      const edge = e.key === 'Home' ? tabs[0] : e.key === 'End' ? tabs[tabs.length - 1] : undefined;
+      if (edge) {
+        e.preventDefault();
+        select(edge, true);
+        return;
+      }
       if (!d) return;
       e.preventDefault();
       const next = tabs[(i + d + tabs.length) % tabs.length];
@@ -208,8 +213,24 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
 
   // Theme cards.
   const cards = [...document.querySelectorAll<HTMLButtonElement>('[data-set-theme]')];
-  const sync = () => cards.forEach((c) => c.setAttribute('aria-checked', String(c.dataset['setTheme'] === currentTheme())));
-  cards.forEach((c) => c.addEventListener('click', () => setTheme(c.dataset['setTheme'] as Theme)));
+  const sync = () =>
+    cards.forEach((c) => {
+      const on = c.dataset['setTheme'] === currentTheme();
+      c.setAttribute('aria-checked', String(on));
+      c.tabIndex = on ? 0 : -1;
+    });
+  cards.forEach((c, i) => {
+    c.addEventListener('click', () => setTheme(c.dataset['setTheme'] as Theme));
+    c.addEventListener('keydown', (e) => {
+      const d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      const next = cards[(i + d + cards.length) % cards.length];
+      if (!next) return;
+      setTheme(next.dataset['setTheme'] as Theme);
+      next.focus();
+    });
+  });
   window.addEventListener('portico:theme', sync);
   sync();
 </script>
@@ -229,7 +250,7 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
     display: block;
   }
   .dim {
-    color: var(--text-muted);
+    color: var(--text-meta);
   }
   .showcase {
     margin-top: clamp(56px, 7vw, 104px);
@@ -341,7 +362,7 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
     color: var(--text-secondary);
   }
   .screen :global(.m) {
-    color: var(--text-muted);
+    color: var(--text-meta);
   }
   .screen :global(.sel) {
     background: var(--bg-selected);
@@ -509,6 +530,19 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
     gap: 6px;
     margin-bottom: var(--space-3);
   }
+  /* Each card scopes its own theme's tokens through data-theme. */
+  .chips i:nth-child(1) {
+    background: var(--bg-base);
+  }
+  .chips i:nth-child(2) {
+    background: var(--bg-elevated);
+  }
+  .chips i:nth-child(3) {
+    background: var(--text-primary);
+  }
+  .chips i:nth-child(4) {
+    background: var(--accent);
+  }
   .chips i {
     width: 22px;
     height: 22px;
@@ -526,7 +560,7 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
     color: var(--text-secondary);
   }
   .themes-note {
-    color: var(--text-muted);
+    color: var(--text-meta);
     font-size: var(--fs-ui-sm);
   }
   @media (max-width: 1000px) {

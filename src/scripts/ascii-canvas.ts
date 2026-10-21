@@ -7,7 +7,7 @@
  * - prefers-reduced-motion: a single still frame, redrawn on resize/theme only.
  * - Colours come from the theme tokens and follow `portico:theme`.
  */
-import { type Grid, CELL_ASPECT, createGrid } from '../lib/ascii/grid.ts';
+import { type Grid, CELL_ASPECT, createGrid, rowRuns } from '../lib/ascii/grid.ts';
 import { token } from './theme.ts';
 
 export interface SceneOptions {
@@ -82,22 +82,24 @@ export function mountScene(opts: SceneOptions): () => void {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.textBaseline = 'top';
     const cw = fs * CELL_ASPECT;
-    let font = '';
+    // One fillText per run of same-tone glyphs, grouped by tone so font and colour change at most 4 times.
+    const byTone: [number, number, string][][] = [[], [], [], [], []];
     for (let r = 0; r < grid.rows; r++) {
-      for (let c = 0; c < grid.cols; c++) {
-        const i = r * grid.cols + c;
-        const g = grid.glyphs[i];
-        const tone = grid.tones[i] ?? 0;
-        if (!g || g === ' ' || tone === 0) continue;
-        const f = `${tone === 4 ? 600 : 400} ${fs}px "JetBrains Mono", monospace`;
-        if (f !== font) {
-          ctx.font = f;
-          font = f;
-        }
-        ctx.fillStyle = colors[tone] ?? colors[2] ?? '#888';
-        ctx.fillText(g, c * cw, r * fs + fs * 0.08);
+      let col = 0;
+      for (const run of rowRuns(grid, r)) {
+        if (run.tone !== 0 && run.text.trim()) byTone[run.tone]?.push([col, r, run.text]);
+        col += run.text.length;
       }
     }
+    byTone.forEach((runs, tone) => {
+      if (tone === 0 || runs.length === 0) return;
+      ctx.font = `${tone === 4 ? 600 : 400} ${fs}px "JetBrains Mono", monospace`;
+      ctx.fillStyle = colors[tone] ?? colors[2] ?? 'gray';
+      for (const [c, r, text] of runs) {
+        // maxWidth pins each run to the grid even if the font's advance drifts slightly.
+        ctx.fillText(text, c * cw, r * fs + fs * 0.08, text.length * cw);
+      }
+    });
     if (first) {
       first = false;
       opts.onFirstFrame?.();

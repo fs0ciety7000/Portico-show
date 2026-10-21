@@ -28,13 +28,13 @@ const f = t.faq;
                 {String(n + 1).padStart(2, '0')} · {s.k}
               </span>
               <div class="line">
-                <code>
+                <code tabindex="0">
                   <span class="prompt" aria-hidden="true">
                     $
                   </span>
                   {s.cmd}
                 </code>
-                <button type="button" class="copy" data-copy={s.cmd} data-copied={i.copied}>
+                <button type="button" class="copy" data-copy={s.cmd} data-copied={i.copied} aria-label={`${i.copy} : ${s.cmd}`}>
                   {i.copy}
                 </button>
               </div>
@@ -43,6 +43,7 @@ const f = t.faq;
         }
       </ol>
       <p class="note">{i.note}</p>
+      <p class="sr-only" role="status" data-copy-status></p>
     </div>
   </div>
 </section>
@@ -80,6 +81,8 @@ const f = t.faq;
       try {
         await navigator.clipboard.writeText(b.dataset['copy'] ?? '');
         b.textContent = b.dataset['copied'] ?? 'OK';
+        const status = document.querySelector('[data-copy-status]');
+        if (status) status.textContent = `${b.dataset['copied'] ?? ''} : ${b.dataset['copy'] ?? ''}`;
         b.classList.add('done');
         setTimeout(() => {
           b.textContent = label;
@@ -176,7 +179,7 @@ const f = t.faq;
   .note {
     padding: var(--space-4);
     font-size: var(--fs-ui-sm);
-    color: var(--text-muted);
+    color: var(--text-meta);
   }
   .faq {
     grid-column: 6 / span 7;

@@ -63,13 +63,23 @@ const home = t.lang === 'fr' ? '/' : '/en/';
 
   <div class="land" data-land role="img" aria-label={f.landscapeLabel}>
     <pre class="ascii base" aria-hidden="true" set:html={art} />
-    <div class="lit" aria-hidden="true"><pre class="ascii" set:html={art} /></div>
+    <div class="lit" aria-hidden="true" data-lit></div>
   </div>
 </footer>
 
 <script>
   const land = document.querySelector<HTMLElement>('[data-land]');
   if (land && window.matchMedia('(hover: hover)').matches) {
+    // The lit copy of the landscape is created on first hover only (halves the DOM).
+    land.addEventListener(
+      'pointerenter',
+      () => {
+        const base = land.querySelector('pre.base');
+        const lit = land.querySelector('[data-lit]');
+        if (base && lit && !lit.firstChild) lit.appendChild(base.cloneNode(true));
+      },
+      { once: true },
+    );
     land.addEventListener('pointermove', (e) => {
       const r = land.getBoundingClientRect();
       land.style.setProperty('--lx', `${e.clientX - r.left}px`);
@@ -185,7 +195,7 @@ const home = t.lang === 'fr' ? '/' : '/en/';
     font-weight: 450;
   }
   .sep {
-    color: var(--text-muted);
+    color: var(--text-meta);
   }
   .legal {
     display: flex;
@@ -220,7 +230,7 @@ const home = t.lang === 'fr' ? '/' : '/en/';
     mask-image: radial-gradient(circle 220px at var(--lx, 50%) var(--ly, 50%), #000 0, #000 35%, transparent 100%);
     transition: opacity var(--motion-slow) var(--ease-standard);
   }
-  .lit pre {
+  .lit :global(pre) {
     color: var(--text-primary);
   }
   .lit :global(b) {

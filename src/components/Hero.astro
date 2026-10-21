@@ -78,7 +78,7 @@ const stillHtml = gridToHtml(still);
     mountScene({
       canvas,
       box,
-      fps: 20,
+      fps: window.innerWidth < 760 ? 12 : 20,
       fontSize: (w) => (w < 480 ? 8 : w < 760 ? 9.5 : 11),
       render: (grid, t, p) => renderHero(grid, { t, px: p.x, py: p.y, scale: grid.cols < 60 ? 0.42 : 0.5 }),
       onFirstFrame: () => box.classList.add('live'),
