@@ -119,7 +119,11 @@ const f = t.faq;
     padding: var(--space-4) var(--space-4) 0;
     list-style: none;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-4);
+  }
+  .steps > li {
+    min-width: 0;
   }
   .step {
     display: block;
@@ -140,7 +144,7 @@ const f = t.faq;
     min-width: 0;
     overflow-x: auto;
     white-space: nowrap;
-    font-size: 13.5px;
+    font-size: var(--text-md);
     color: var(--text-primary);
     user-select: all;
     scrollbar-width: none;
@@ -171,7 +175,7 @@ const f = t.faq;
   }
   .note {
     padding: var(--space-4);
-    font-size: 14px;
+    font-size: var(--fs-ui-sm);
     color: var(--text-muted);
   }
   .faq {
@@ -200,7 +204,7 @@ const f = t.faq;
   }
   .q {
     font-family: var(--font-mono);
-    font-size: 14px;
+    font-size: var(--fs-ui-sm);
     text-transform: uppercase;
     letter-spacing: 0.01em;
   }

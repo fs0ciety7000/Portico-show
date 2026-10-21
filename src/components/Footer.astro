@@ -137,7 +137,7 @@ const home = t.lang === 'fr' ? '/' : '/en/';
   }
   .col a {
     color: var(--text-secondary);
-    font-size: 15px;
+    font-size: var(--fs-ui);
     transition: color var(--motion-fast) var(--ease-standard);
   }
   .col a:hover {
@@ -177,7 +177,7 @@ const home = t.lang === 'fr' ? '/' : '/en/';
     gap: 2px;
   }
   .name {
-    font-size: 15px;
+    font-size: var(--fs-ui);
     font-weight: 550;
   }
   .studio-name {
@@ -203,8 +203,8 @@ const home = t.lang === 'fr' ? '/' : '/en/';
     margin-top: var(--space-6);
     overflow: hidden;
     font-size: max(calc(100vw / 144), 5px);
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%);
-    mask-image: linear-gradient(to bottom, transparent, #000 22%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 82%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 82%, transparent);
   }
   .land pre {
     flex: none;
@@ -216,9 +216,12 @@ const home = t.lang === 'fr' ? '/' : '/en/';
     display: flex;
     justify-content: center;
     opacity: 0;
-    -webkit-mask-image: radial-gradient(circle 180px at var(--lx, 50%) var(--ly, 50%), #000 0%, transparent 100%);
-    mask-image: radial-gradient(circle 180px at var(--lx, 50%) var(--ly, 50%), #000 0%, transparent 100%);
+    -webkit-mask-image: radial-gradient(circle 220px at var(--lx, 50%) var(--ly, 50%), #000 0, #000 35%, transparent 100%);
+    mask-image: radial-gradient(circle 220px at var(--lx, 50%) var(--ly, 50%), #000 0, #000 35%, transparent 100%);
     transition: opacity var(--motion-slow) var(--ease-standard);
+  }
+  .lit pre {
+    color: var(--text-primary);
   }
   .lit :global(b) {
     color: var(--accent);

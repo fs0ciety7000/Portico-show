@@ -103,10 +103,10 @@ export function renderFooter(grid: Grid): void {
       const h = hash2(col, row);
       if (clump > 0.66 - depth * 0.06) {
         const lit = noise2(col * 0.4, row * 0.6) > 0.5;
-        const set = depth > 0.6 ? '%#&' : depth > 0.3 ? '*%#' : '+*';
+        const set = depth > 0.6 ? '=+*' : depth > 0.3 ? '+=-' : ':-';
         put(col, row, set[Math.floor(h * set.length)] ?? '#', lit ? 3 : 2);
       } else if (h < 0.04 + depth * 0.32) {
-        const set = depth < 0.25 ? ".,'" : depth < 0.6 ? ",'\"v" : "\"vwW'";
+        const set = depth < 0.25 ? ".," : depth < 0.6 ? ".,'" : ".,':";
         put(col, row, set[Math.floor(hash2(row, col) * set.length)] ?? ',', depth > 0.7 && h < 0.2 ? 2 : 1);
       } else {
         put(col, row, ' ', 0);
@@ -132,9 +132,16 @@ export function renderFooter(grid: Grid): void {
   }
   const tEnd = (xs[nCols - 1] ?? left) + colW;
 
-  // Clear the temple silhouette so the hatching never shows through.
+  // Clear the temple silhouette so the hatching never shows through:
+  // full height under the entablature, only the low ruins at both ends.
+  const coreL = (xs[1] ?? left) - 3;
+  const coreR = (xs[4] ?? left) + colW + 3;
   for (let row = capRow - 4; row <= stylobate + 2; row++) {
-    for (let col = left - 4; col <= tEnd + 4; col++) put(col, row, ' ', 0);
+    for (let col = left - 4; col <= tEnd + 4; col++) {
+      const core = col >= coreL && col <= coreR;
+      const low = row >= stylobate - Math.round(colH * 0.45);
+      if (core || low) put(col, row, ' ', 0);
+    }
   }
 
   // Steps.
@@ -145,7 +152,8 @@ export function renderFooter(grid: Grid): void {
   }
 
   // Columns: lit on the left, shaded on the right; two are broken.
-  const broken: Record<number, number> = { 4: Math.round(colH * 0.45), 5: Math.round(colH * 0.18) };
+  // Symmetric ruin: the outer columns are broken, the arch stays centred under the entablature.
+  const broken: Record<number, number> = { 0: Math.round(colH * 0.38), 5: Math.round(colH * 0.2) };
   xs.forEach((cx, k) => {
     const h = broken[k] ?? colH;
     const top = stylobate - h;
@@ -158,24 +166,22 @@ export function renderFooter(grid: Grid): void {
       stamp(cx - 1, top - 1, ['_[===]_'], 3);
     } else {
       // Jagged break.
-      const jag = k === 4 ? ['`/\\_`'] : ['_/`\\'];
+      const jag = k === 0 ? ['`/\\_`'] : ['_/`\\'];
       stamp(cx, top - 1, jag, 2);
       // Fallen drums nearby.
-      stamp(cx + colW + 3, stylobate + 3, ['(=|:|=)'], (_, i) => (i < 3 ? 3 : 2));
+      if (k === 5) stamp(cx + colW + 3, stylobate + 3, ['(=|:|=)'], (_, i) => (i < 3 ? 3 : 2));
     }
   });
 
   // Entablature over the standing columns (ends broken after column 4).
-  const entEnd = (xs[3] ?? left) + colW + 6;
-  const entStart = left - 2;
+  const entEnd = (xs[4] ?? left) + colW + 2;
+  const entStart = (xs[1] ?? left) - 2;
   for (let col = entStart; col <= entEnd; col++) {
-    const ragged = col > entEnd - 5 ? hash2(col, 1) < 0.5 : false;
+    const ragged = col > entEnd - 4 || col < entStart + 3 ? hash2(col, 1) < 0.5 : false;
     put(col, capRow - 2, '=', 3);
     if (!ragged) put(col, capRow - 3, (col - entStart) % 6 < 3 ? '|' : ' ', 2);
     if (!ragged || col < entEnd - 2) put(col, capRow - 4, '"', 2);
   }
-  // Pediment hint on the left end.
-  for (let s = 0; s < 4; s++) put(entStart - 1 - s, capRow - 2 + s, '/', 2);
 
   // The arch in the wide bay, its doorway glowing.
   const aL = (xs[2] ?? left) + colW + 3;

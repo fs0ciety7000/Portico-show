@@ -21,6 +21,7 @@ export function mountTui(root: HTMLElement): void {
   let rows = 26;
   let attract = !reduced;
   let timers: number[] = [];
+  const phaseTimers: number[] = [];
   let html = '';
 
   const draw = () => {
@@ -35,7 +36,7 @@ export function mountTui(root: HTMLElement): void {
   const fit = () => {
     const w = root.clientWidth;
     // Wide windows get more columns, like a real terminal; narrow ones lose the details pane.
-    cols = w < 640 ? 50 : Math.max(80, Math.min(128, Math.floor((w - 40) / (13 * 0.6))));
+    cols = w < 640 ? 50 : Math.max(80, Math.min(150, Math.floor((w - 40) / (13 * 0.6))));
     rows = w < 640 ? 24 : 26;
     const size = root.closest('[data-panel]')?.querySelector('[data-tui-size]');
     if (size) size.textContent = `${cols}×${rows}`;
@@ -45,6 +46,10 @@ export function mountTui(root: HTMLElement): void {
 
   const later = (ms: number, fn: () => void) => {
     timers.push(window.setTimeout(fn, ms));
+  };
+  // Connection phases are never cancelled by stopping the attract script.
+  const phase = (ms: number, fn: () => void) => {
+    phaseTimers.push(window.setTimeout(fn, ms));
   };
 
   const selected = () => {
@@ -66,19 +71,19 @@ export function mountTui(root: HTMLElement): void {
     s.sessions[alias] = { phase: 'connecting', since: performance.now(), lines: welcome(), input: '' };
     draw();
     if (host.fails) {
-      later(1100, () => {
+      phase(1100, () => {
         const sess = s.sessions[alias];
         if (sess) sess.phase = 'error';
         draw();
       });
       return;
     }
-    later(host.jump ? 1000 : 650, () => {
+    phase(host.jump ? 1000 : 650, () => {
       const sess = s.sessions[alias];
       if (!sess || sess.phase !== 'connecting') return;
       sess.phase = 'authenticating';
       draw();
-      later(700, () => {
+      phase(700, () => {
         if (sess.phase !== 'authenticating') return;
         sess.phase = 'connected';
         s.mode = 'term';
@@ -141,6 +146,7 @@ export function mountTui(root: HTMLElement): void {
       return false;
     }
     if (s.mode === 'help') {
+      if (k === 'Tab') return false;
       if (k === 'Escape' || k === '?' || k === 'q') s.mode = 'hosts';
       return true;
     }
@@ -198,10 +204,9 @@ export function mountTui(root: HTMLElement): void {
       case '?':
         s.mode = 'help';
         return true;
-      case 'Tab':
       case ']': {
         const open = Object.keys(s.sessions).find((a) => s.sessions[a]?.phase === 'connected');
-        if (!open || e.shiftKey) return false;
+        if (!open) return false;
         s.mode = 'term';
         s.active = open;
         return true;

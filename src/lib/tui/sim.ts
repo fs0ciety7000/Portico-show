@@ -24,14 +24,13 @@ export interface Host {
 }
 
 export const HOSTS: Host[] = [
-  { alias: 'prod-api', user: 'deploy', host: '10.20.1.15', port: 22, tags: ['prod', 'api'], fav: true, jump: 'bastion', forward: '9090 localhost:9090', line: 8, rtt: 23 },
-  { alias: 'prod-db', user: 'postgres', host: '10.20.4.12', port: 22, tags: ['prod', 'db'], fav: true, jump: 'bastion', forward: '5432 localhost:5432', line: 15, rtt: 26 },
+  { alias: 'db-prod', user: 'postgres', host: '10.0.4.12', port: 22, tags: ['prod', 'db'], fav: true, jump: 'bastion', forward: '5432 localhost:5432', line: 12, rtt: 26 },
+  { alias: 'bastion', user: 'ops', host: 'bastion.example.com', port: 2222, tags: ['infra'], line: 1, rtt: 18 },
+  { alias: 'web-01', user: 'deploy', host: 'web-01.internal', port: 22, tags: ['prod', 'web'], jump: 'bastion', forward: '8080 localhost:80', line: 5, rtt: 23 },
+  { alias: 'staging', user: 'deploy', host: 'staging.example.com', port: 22, tags: ['staging'], line: 1, rtt: 31 },
   { alias: 'nas', user: 'admin', host: 'nas.home.arpa', port: 22, tags: ['home'], fav: true, line: 52, rtt: 0, fails: 'nas.home.arpa' },
-  { alias: 'bastion', user: 'ops', host: 'bastion.acme-cloud.net', port: 22, tags: ['infra'], line: 1, rtt: 18 },
-  { alias: 'prod-worker-01', user: 'deploy', host: '10.20.2.21', port: 22, tags: ['prod'], jump: 'bastion', line: 22, rtt: 24 },
-  { alias: 'staging-web', user: 'deploy', host: 'staging.acme-cloud.net', port: 2222, tags: ['staging', 'web'], line: 29, rtt: 31 },
-  { alias: 'staging-db', user: 'postgres', host: '10.30.4.10', port: 22, tags: ['staging', 'db'], jump: 'bastion', line: 36, rtt: 34 },
-  { alias: 'gitlab-runner', user: 'gitlab-runner', host: 'runner.acme-cloud.net', port: 22, tags: ['ci'], line: 43, rtt: 41 },
+  { alias: 'api-01', user: 'deploy', host: 'api-01.internal', port: 22, tags: ['prod', 'api'], jump: 'bastion', line: 22, rtt: 24 },
+  { alias: 'gitlab-runner', user: 'gitlab-runner', host: 'runner.example.com', port: 22, tags: ['ci'], line: 43, rtt: 41 },
   { alias: 'raspberry', user: 'pi', host: '192.168.1.42', port: 22, tags: ['home', 'iot'], line: 58, rtt: 4 },
   { alias: 'homelab-k3s', user: 'ubuntu', host: '192.168.1.60', port: 22, tags: ['home', 'k8s'], line: 64, rtt: 3 },
 ];
@@ -293,12 +292,18 @@ export function render(s: State, cols: number, rows: number): Run[][] {
       b.put(dx + 2, y++, 'hint: check HostName or your DNS', 'm');
     }
     y++;
-    const kx = b.put(dx, y, ' ↵ ', 'kbd');
-    const label = sess?.phase === 'connected' ? 'open terminal' : sess?.phase === 'error' ? 'retry' : 'connect';
-    let ax = b.put(kx + 1, y, label, 's');
-    if (sess && sess.phase !== 'idle' && sess.phase !== 'error') {
-      ax = b.put(ax + 3, y, ' d ', 'kbd');
-      b.put(ax + 1, y, 'disconnect', 's');
+    const busy = sess?.phase === 'connecting' || sess?.phase === 'authenticating';
+    if (busy) {
+      const cx = b.put(dx, y, ' d ', 'kbd');
+      b.put(cx + 1, y, 'cancel', 's');
+    } else {
+      const kx = b.put(dx, y, ' ↵ ', 'kbd');
+      const label = sess?.phase === 'connected' ? 'open terminal' : sess?.phase === 'error' ? 'retry' : 'connect';
+      const ax = b.put(kx + 1, y, label, 's');
+      if (sess?.phase === 'connected') {
+        const dx2 = b.put(ax + 3, y, ' d ', 'kbd');
+        b.put(dx2 + 1, y, 'disconnect', 's');
+      }
     }
     y += 2;
     const row = (k: string, v: string, cls = 's') => {

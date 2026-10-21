@@ -69,7 +69,7 @@ const fr = {
     label: 'Interfaces',
     title: ['Un moteur.', 'Deux interfaces.'],
     lead: 'portico-core porte tout le métier : sessions, authentification, SFTP, tunnels. La TUI vit dans votre terminal, la GUI dans une fenêtre native. Même moteur, mêmes raccourcis, mêmes thèmes.',
-    tabs: { tui: 'TUI · terminal', gui: 'GUI · application' },
+    tabs: { tui: 'TUI · terminal', gui: 'GUI · application', tuiShort: 'TUI', guiShort: 'GUI' },
     tuiHint: 'Essayez : j / k pour naviguer, ↵ pour se connecter, / pour chercher, t pour le thème.',
     tuiFocus: 'Cliquez ou tabulez dans le terminal pour le piloter au clavier.',
     tuiSpecs: [
@@ -139,8 +139,8 @@ const fr = {
       { k: 'Rust strict', v: 'forbid(unsafe_code), zéro unwrap hors tests, clippy pedantic sans warning.' },
     ],
     modal: {
-      title: 'Clé d’hôte modifiée · prod-db',
-      body: 'La clé présentée par prod-db ne correspond pas à celle enregistrée. Quelqu’un intercepte peut-être la connexion.',
+      title: 'Clé d’hôte modifiée · db-prod',
+      body: 'La clé présentée par db-prod ne correspond pas à celle enregistrée. Quelqu’un intercepte peut-être la connexion.',
       expected: 'Attendue',
       received: 'Reçue',
       fix: 'Si le changement est légitime :',
@@ -178,7 +178,7 @@ const fr = {
         ],
       },
       {
-        name: 'Application · GUI',
+        name: 'GUI · ⌘ / Ctrl-Shift',
         keys: [
           [['⌘', 'K'], 'Palette de commandes'],
           [['⌘', 'T'], 'Nouvel onglet'],
@@ -197,7 +197,7 @@ const fr = {
       { n: '0', s: 'done', t: 'Fondations', d: 'Workspace, lints stricts, parser ssh_config, inventaire, thèmes, coquilles TUI et GUI.' },
       { n: '1', s: 'done', t: 'Connexion interactive', d: 'Transport, known_hosts, auth dans l’ordre d’OpenSSH, ProxyJump, PTY et terminaux dans les deux UIs.' },
       { n: '2', s: 'done', t: 'SFTP et tunnels', d: 'Explorateurs de fichiers, transferts streamés, forwarding -L et -R, panneau Tunnels.' },
-      { n: '3', s: 'next', t: 'Clés, secrets, snippets', d: 'Génération, copy-id, agent, vault chiffré de repli, snippets avec placeholders.' },
+      { n: '3', s: 'wip', t: 'Clés, secrets, snippets', d: 'Génération, copy-id, agent, vault chiffré de repli, snippets avec placeholders.' },
       { n: '4', s: 'next', t: 'Finition MVP', d: 'Récents, favoris, panneau debug, raccourcis configurables, paquets .dmg, .deb et AppImage.' },
     ] as { n: string; s: Status; t: string; d: string }[],
     later: 'Ensuite',
@@ -315,7 +315,7 @@ const en: Dict = {
     label: 'Interfaces',
     title: ['One engine.', 'Two interfaces.'],
     lead: 'portico-core does all the work: sessions, authentication, SFTP, tunnels. The TUI lives in your terminal, the GUI in a native window. Same engine, same shortcuts, same themes.',
-    tabs: { tui: 'TUI · terminal', gui: 'GUI · app' },
+    tabs: { tui: 'TUI · terminal', gui: 'GUI · app', tuiShort: 'TUI', guiShort: 'GUI' },
     tuiHint: 'Try it: j / k to move, ↵ to connect, / to search, t for the theme.',
     tuiFocus: 'Click or tab into the terminal to drive it from the keyboard.',
     tuiSpecs: [
@@ -385,8 +385,8 @@ const en: Dict = {
       { k: 'Strict Rust', v: 'forbid(unsafe_code), zero unwrap outside tests, clippy pedantic with no warning.' },
     ],
     modal: {
-      title: 'Host key changed · prod-db',
-      body: 'The key presented by prod-db does not match the one on record. Someone may be intercepting the connection.',
+      title: 'Host key changed · db-prod',
+      body: 'The key presented by db-prod does not match the one on record. Someone may be intercepting the connection.',
       expected: 'Expected',
       received: 'Received',
       fix: 'If the change is legitimate:',
@@ -424,7 +424,7 @@ const en: Dict = {
         ],
       },
       {
-        name: 'App · GUI',
+        name: 'GUI · ⌘ / Ctrl-Shift',
         keys: [
           [['⌘', 'K'], 'Command palette'],
           [['⌘', 'T'], 'New tab'],
@@ -443,7 +443,7 @@ const en: Dict = {
       { n: '0', s: 'done', t: 'Foundations', d: 'Workspace, strict lints, ssh_config parser, inventory, themes, TUI and GUI shells.' },
       { n: '1', s: 'done', t: 'Interactive sessions', d: 'Transport, known_hosts, OpenSSH-order auth, ProxyJump, PTY and terminals in both UIs.' },
       { n: '2', s: 'done', t: 'SFTP and tunnels', d: 'File browsers, streamed transfers, -L and -R forwarding, Tunnels panel.' },
-      { n: '3', s: 'next', t: 'Keys, secrets, snippets', d: 'Generation, copy-id, agent, encrypted fallback vault, snippets with placeholders.' },
+      { n: '3', s: 'wip', t: 'Keys, secrets, snippets', d: 'Generation, copy-id, agent, encrypted fallback vault, snippets with placeholders.' },
       { n: '4', s: 'next', t: 'MVP polish', d: 'Recents, favourites, debug panel, configurable shortcuts, .dmg, .deb and AppImage packages.' },
     ],
     later: 'After that',

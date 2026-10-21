@@ -34,7 +34,15 @@ const stillHtml = gridToHtml(still);
         </a>
       </div>
       <ul class="tags" role="list" data-reveal data-d="4">
-        {h.tags.map((tag) => <li>{tag}</li>)}
+        {
+          h.tags.map((tag) => (
+            <li>
+              <span class="brace">{'{'}</span>
+              {tag.slice(1, -1)}
+              <span class="brace">{'}'}</span>
+            </li>
+          ))
+        }
       </ul>
       <a class="scroll meta" href="#principes">
         <span class="scroll-dot" aria-hidden="true"></span>
@@ -108,6 +116,7 @@ const stillHtml = gridToHtml(still);
   }
   .title span {
     display: block;
+    text-wrap: balance;
   }
   .title .second {
     color: var(--text-secondary);
@@ -133,8 +142,10 @@ const stillHtml = gridToHtml(still);
     list-style: none;
     font-family: var(--font-mono);
     font-size: var(--text-sm);
+    color: var(--text-secondary);
+  }
+  .brace {
     color: var(--accent);
-    opacity: 0.85;
   }
   .scroll {
     display: inline-flex;

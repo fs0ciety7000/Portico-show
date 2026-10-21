@@ -115,7 +115,12 @@ const home = t.lang === 'fr' ? '/' : '/en/';
   const io = new IntersectionObserver(
     (entries) => {
       for (const en of entries) {
-        if (!en.isIntersecting) continue;
+        if (!en.isIntersecting) {
+          links.forEach((a) => {
+            if (a.getAttribute('href') === `#${en.target.id}`) a.removeAttribute('aria-current');
+          });
+          continue;
+        }
         const id = `#${en.target.id}`;
         links.forEach((a) => {
           if (a.getAttribute('href') === id) a.setAttribute('aria-current', 'true');
@@ -148,17 +153,17 @@ const home = t.lang === 'fr' ? '/' : '/en/';
     width: min(100%, 1120px);
     padding-inline: var(--space-4) var(--space-2);
     border-radius: var(--radius-lg);
-    background: color-mix(in srgb, var(--bg-surface) 72%, transparent);
+    background: color-mix(in srgb, var(--bg-surface) 86%, transparent);
     border: 1px solid color-mix(in srgb, var(--border-subtle) 70%, transparent);
-    backdrop-filter: blur(14px) saturate(1.2);
     -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
     transition:
       background-color var(--motion-base) var(--ease-standard),
       box-shadow var(--motion-base) var(--ease-standard);
   }
   .nav.scrolled .bar,
   .nav.open .bar {
-    background: color-mix(in srgb, var(--bg-overlay) 88%, transparent);
+    background: color-mix(in srgb, var(--bg-overlay) 94%, transparent);
     box-shadow: var(--shadow-raised);
   }
   .links {

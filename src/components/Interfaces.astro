@@ -40,11 +40,11 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
       <div class="tabs" role="tablist" aria-label={it.label}>
         <button type="button" role="tab" id="tab-tui" aria-controls="panel-tui" aria-selected="true" tabindex="0" data-tab="tui">
           <span class="meta">01</span>
-          {it.tabs.tui}
+          <span class="long">{it.tabs.tui}</span><span class="short" aria-hidden="true">{it.tabs.tuiShort}</span>
         </button>
         <button type="button" role="tab" id="tab-gui" aria-controls="panel-gui" aria-selected="false" tabindex="-1" data-tab="gui">
           <span class="meta">02</span>
-          {it.tabs.gui}
+          <span class="long">{it.tabs.gui}</span><span class="short" aria-hidden="true">{it.tabs.guiShort}</span>
         </button>
       </div>
 
@@ -257,6 +257,20 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
       color var(--motion-fast) var(--ease-standard),
       border-color var(--motion-fast) var(--ease-standard);
   }
+  [role='tab'] {
+    white-space: nowrap;
+  }
+  .short {
+    display: none;
+  }
+  @media (max-width: 480px) {
+    .long {
+      display: none;
+    }
+    .short {
+      display: inline;
+    }
+  }
   [role='tab']:hover {
     color: var(--text-primary);
     background: var(--bg-elevated);
@@ -306,7 +320,7 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
   .screen {
     margin: 0;
     font-family: var(--font-mono);
-    font-size: min(14px, calc(100cqi / var(--cols, 92) / 0.6));
+    font-size: min(15px, calc(100cqi / var(--cols, 92) / 0.6));
     line-height: 1.22;
     white-space: pre;
     color: var(--text-primary);
@@ -392,7 +406,7 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
   }
   .hint {
     color: var(--text-secondary);
-    font-size: 15px;
+    font-size: var(--fs-ui);
     max-width: 52ch;
   }
   .specs {
@@ -440,10 +454,14 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
   .view {
     height: 32px;
     padding-inline: var(--space-3);
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-md);
     border: 1px solid var(--border-subtle);
-    font-size: var(--fs-small);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--text-secondary);
+    position: relative;
     transition:
       background-color var(--motion-fast) var(--ease-standard),
       color var(--motion-fast) var(--ease-standard);
@@ -453,9 +471,10 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
     background: var(--bg-elevated);
   }
   .view[aria-pressed='true'] {
-    background: var(--text-primary);
-    color: var(--bg-base);
-    border-color: var(--text-primary);
+    background: var(--bg-selected);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+    box-shadow: inset 0 -2px 0 var(--accent);
   }
   .themes {
     margin-top: clamp(64px, 8vw, 112px);
@@ -494,7 +513,7 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    border: 1px solid rgb(255 255 255 / 0.08);
+    border: 1px solid var(--border-strong);
   }
   .tname {
     font-family: var(--font-display);
@@ -503,12 +522,12 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
     letter-spacing: -0.02em;
   }
   .tnote {
-    font-size: 14px;
+    font-size: var(--fs-ui-sm);
     color: var(--text-secondary);
   }
   .themes-note {
     color: var(--text-muted);
-    font-size: 14px;
+    font-size: var(--fs-ui-sm);
   }
   @media (max-width: 1000px) {
     .col-label,
