@@ -26,6 +26,8 @@ export default defineConfig({
     locales: ['fr', 'en'],
     routing: { prefixDefaultLocale: false },
   },
+  // three.js ships as one deferred chunk (~140 KB gzip) for the hero scene.
+  vite: { build: { chunkSizeWarningLimit: 700 } },
   integrations: [
     sitemap({
       i18n: { defaultLocale: 'fr', locales: { fr: 'fr', en: 'en' } },

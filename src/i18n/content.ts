@@ -43,7 +43,7 @@ const fr = {
     figure: 'Fig. 01 · Le seuil',
     figureMeta: 'kex curve25519-sha256',
     scroll: 'Défiler pour entrer',
-    asciiLabel: 'Le logo Portico dessiné en caractères : un entablement, deux colonnes et une arche, autour duquel tourne un vortex gravé.',
+    sceneLabel: 'Scène 3D : le portique du logo Portico, un entablement sur deux colonnes, dont l’arche éclairée est traversée par un tunnel d’anneaux et un flux de particules.',
   },
   stats: {
     label: 'En chiffres',
@@ -241,7 +241,7 @@ const fr = {
     studioUrl: 'https://interactive.cardormedia.com',
     license: 'MIT OR Apache-2.0',
     top: 'Haut de page',
-    landscapeLabel: 'Paysage en caractères ASCII : un portique en ruine sur son soubassement, son arche encore éclairée, des mesas à l’horizon et un voyageur portant une lanterne.',
+    landscapeLabel: 'Gravure : un portique en ruine dans un désert de mesas, la nuit, son arche éclairée ; un voyageur portant une lanterne marche vers lui.',
   },
   tui: {
     hosts: 'Hosts',
@@ -289,7 +289,7 @@ const en: Dict = {
     figure: 'Fig. 01 · The threshold',
     figureMeta: 'kex curve25519-sha256',
     scroll: 'Scroll to step in',
-    asciiLabel: 'The Portico logo drawn in characters: an entablature, two columns and an arch, with an engraved vortex turning around it.',
+    sceneLabel: '3D scene: the portico of the Portico logo, an entablature on two columns, its lit arch crossed by a tunnel of rings and a stream of particles.',
   },
   stats: {
     label: 'By the numbers',
@@ -487,7 +487,7 @@ const en: Dict = {
     studioUrl: 'https://interactive.cardormedia.com',
     license: 'MIT OR Apache-2.0',
     top: 'Back to top',
-    landscapeLabel: 'ASCII landscape: a ruined portico on its base, its arch still lit, mesas on the horizon and a traveller carrying a lantern.',
+    landscapeLabel: 'Engraving: a ruined portico in a desert of mesas at night, its arch lit; a traveller carrying a lantern walks towards it.',
   },
   tui: {
     hosts: 'Hosts',

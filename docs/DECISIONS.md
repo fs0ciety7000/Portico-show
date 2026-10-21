@@ -11,11 +11,18 @@
 - **Choix** : CSS natif scopé par composant, variables issues de `portico-theme`.
 - **Raison** : une seule source de vérité visuelle avec l'app. Les trois thèmes de l'app pilotent le site (touche `t`).
 
-## D-003 · ASCII art procédural, partagé build/navigateur
-- **Choix** : scènes décrites par des fonctions pures (`src/lib/ascii`). Le build les rend en `<pre>` (fallback sans JS,
-  `prefers-reduced-motion`), le navigateur anime le hero sur un `<canvas>` (20 fps, en pause hors écran).
-- **Alternatives** : image pré-rendue, WebGL, bibliothèque ASCII.
-- **Raison** : aucune dépendance, texte net à toute taille, déterministe, et coût CPU borné.
+## D-003 · Hero en 3D (Three.js), footer en gravure
+- **Choix** : le hero est une scène Three.js : le portique du logo en volume (entablement, colonnes cannelées,
+  arche en laiton), la lumière dans l'arche, un tunnel d'anneaux et un flux de particules qui la traversent.
+  Le footer est une gravure (eau-forte) d'un portique en ruine, utilisée comme masque de luminance : ses traits
+  prennent les couleurs du thème actif, l'accent éclaire l'arche et la lanterne.
+- **Historique** : une première version utilisait de l'ASCII art procédural (hero et footer) ; abandonnée à la demande
+  du propriétaire au profit d'un rendu plus « produit ».
+- **Raison** : Three.js chargé en différé (chunk séparé, `requestIdleCallback`), poster SVG en repli sans WebGL ni JS,
+  rendu figé avec `prefers-reduced-motion`, boucle en pause hors écran. La gravure est servie en WebP niveaux de gris
+  (100 à 260 Ko), chargée avec le footer.
+- **Source de l'illustration** : générée par IA (gpt-image-2) d'après un brief « gravure du XIXe, portique, mesas,
+  voyageur à la lanterne », original conservé dans `design/footer-engraving-source.png`.
 
 ## D-004 · Démo TUI simulée, mise en page relevée sur la vraie TUI
 - **Choix** : `src/lib/tui/sim.ts` reproduit la TUI (captures tmux de `portico` en release) et se pilote au clavier.

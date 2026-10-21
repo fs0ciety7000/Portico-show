@@ -44,6 +44,8 @@
   --section-y: clamp(96px, 12vw, 192px);
   --nav-h: 56px;
   --stagger: 60ms;
+  /* Hero scene cross-fade only: a whole-viewport canvas appearing needs more than --motion-slow. */
+  --motion-reveal: 600ms;
 
   /* Marble: inverted surfaces built from the theme's own text and base. */
   --marble-bg: var(--text-primary);
