@@ -57,6 +57,7 @@ const legend = t.features.legend;
   .phases {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
+    row-gap: var(--space-7);
     margin: clamp(56px, 7vw, 104px) 0 0;
     padding: 0;
     list-style: none;
@@ -97,6 +98,17 @@ const legend = t.features.legend;
   .phase[data-s='done'] .node {
     background: var(--accent);
     border-color: var(--accent);
+  }
+  .phase[data-s='wip'] .node {
+    border-color: var(--accent);
+    background: linear-gradient(90deg, var(--accent) 50%, var(--bg-base) 50%);
+  }
+  .phase[data-s='wip'] .n {
+    color: var(--text-primary);
+  }
+  .phase[data-s='drop'] h3,
+  .phase[data-s='drop'] .d {
+    color: var(--text-meta);
   }
   .n {
     font-size: 40px;

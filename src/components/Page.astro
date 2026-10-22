@@ -10,6 +10,7 @@ import Security from './Security.astro';
 import Keyboard from './Keyboard.astro';
 import Roadmap from './Roadmap.astro';
 import Install from './Install.astro';
+import Faq from './Faq.astro';
 import Footer from './Footer.astro';
 import { dict, type Lang } from '../i18n/content.ts';
 
@@ -32,6 +33,7 @@ const t = dict[Astro.props.lang];
     <Keyboard t={t} />
     <Roadmap t={t} />
     <Install t={t} />
+    <Faq t={t} />
   </main>
   <Footer t={t} />
 </Base>

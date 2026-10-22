@@ -24,6 +24,12 @@ const h = t.hero;
 
   <div class="wrap grid hero-grid">
     <div class="copy">
+      <a class="release" href="#installer" data-reveal>
+        <span class="status-dot" data-s="connected" aria-hidden="true"></span>
+        <span class="rel-v mono">{h.release}</span>
+        <span class="rel-h">{h.releaseHint}</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
       <p class="meta label" data-reveal>{h.eyebrow}</p>
       <h1 id="hero-title" class="title" data-reveal data-d="1">
         <span>{h.title[0]}</span>
@@ -31,13 +37,13 @@ const h = t.hero;
       </h1>
       <p class="lead" data-reveal data-d="2">{h.lead}</p>
       <div class="ctas" data-reveal data-d="3">
-        <a class="btn btn-primary" href={REPO} rel="noopener">
+        <a class="btn btn-primary" href="#installer">
           {h.primary}
-          <span class="arrow" aria-hidden="true">↗</span>
-        </a>
-        <a class="btn btn-ghost" href="#installer">
-          {h.secondary}
           <kbd aria-hidden="true">↓</kbd>
+        </a>
+        <a class="btn btn-ghost" href={REPO} rel="noopener">
+          {h.secondary}
+          <span class="arrow" aria-hidden="true">↗</span>
         </a>
       </div>
       <ul class="tags" role="list" data-reveal data-d="4">
@@ -181,6 +187,51 @@ const h = t.hero;
   }
   .ctas kbd {
     background: transparent;
+    color: inherit;
+    border-color: currentColor;
+    opacity: 0.7;
+  }
+  .release {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    align-self: flex-start;
+    max-width: 100%;
+    height: 34px;
+    padding: 0 var(--space-3) 0 var(--space-3);
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border-strong);
+    background: color-mix(in srgb, var(--bg-surface) 80%, transparent);
+    font-size: var(--fs-small);
+    transition:
+      border-color var(--motion-fast) var(--ease-standard),
+      background-color var(--motion-fast) var(--ease-standard);
+  }
+  .release:hover {
+    border-color: var(--accent);
+    background: var(--bg-elevated);
+  }
+  .rel-v {
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+  }
+  .rel-h {
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .release .arrow {
+    color: var(--accent);
+    transition: transform var(--motion-fast) var(--ease-standard);
+  }
+  .release:hover .arrow {
+    transform: translateX(2px);
+  }
+  @media (max-width: 480px) {
+    .rel-h {
+      display: none;
+    }
   }
   .tags {
     display: flex;

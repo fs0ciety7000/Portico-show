@@ -366,6 +366,15 @@ code {
   border-radius: 50%;
   background: currentColor;
 }
+.pill[data-s='drop'] {
+  color: var(--text-meta);
+  text-decoration: line-through;
+}
+.pill[data-s='drop']::before {
+  background: transparent;
+  box-shadow: none;
+  width: 0;
+}
 .pill[data-s='next']::before {
   background: transparent;
   box-shadow: inset 0 0 0 1px currentColor;

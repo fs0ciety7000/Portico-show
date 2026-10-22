@@ -1,80 +1,134 @@
 ---
 import type { Dict } from '../i18n/content.ts';
+import { DOWNLOAD_URL, RELEASE_URL } from '../i18n/content.ts';
 interface Props {
   t: Dict;
 }
 const { t } = Astro.props;
 const i = t.install;
-const f = t.faq;
 ---
 
 <section id="installer" class="section" aria-labelledby="install-title">
-  <div class="wrap grid">
-    <div class="intro">
-      <p class="meta label" data-reveal>{i.label}</p>
-      <h2 id="install-title" class="h2" data-reveal>{i.title}</h2>
-      <p class="lead" data-reveal data-d="1">{i.lead}</p>
-    </div>
-    <div class="term" data-reveal data-d="2">
-      <div class="term-head">
-        <span class="meta">~/src</span>
-        <span class="meta">bash</span>
+  <div class="wrap">
+    <div class="grid head">
+      <p class="meta label col-label" data-reveal>{i.label}</p>
+      <div class="col-main">
+        <h2 id="install-title" class="h2" data-reveal>{i.title}</h2>
+        <p class="lead" data-reveal data-d="1">{i.lead}</p>
+        <p class="release mono" data-reveal data-d="2">
+          <span class="ver"><span class="status-dot" data-s="connected" aria-hidden="true"></span>v{i.release.version}</span>
+          <span class="sep" aria-hidden="true">·</span>
+          <span>{i.release.date}</span>
+          <span class="sep" aria-hidden="true">·</span>
+          <a href={RELEASE_URL} rel="noopener">{i.release.notes} <span aria-hidden="true">↗</span></a>
+          <span class="sep" aria-hidden="true">·</span>
+          <a href={`${DOWNLOAD_URL}/SHA256SUMS`} rel="noopener">{i.release.sums}</a>
+        </p>
       </div>
-      <ol class="steps" role="list">
-        {
-          i.steps.map((s, n) => (
-            <li>
-              <span class="meta step">
-                {String(n + 1).padStart(2, '0')} · {s.k}
-              </span>
-              <div class="line">
-                <code tabindex="0">
-                  <span class="prompt" aria-hidden="true">
-                    $
-                  </span>
-                  {s.cmd}
-                </code>
-                <button type="button" class="copy" data-copy={s.cmd} data-copied={i.copied} aria-label={`${i.copy} : ${s.cmd}`}>
-                  {i.copy}
-                </button>
-              </div>
-            </li>
-          ))
-        }
-      </ol>
-      <p class="note">{i.note}</p>
-      <p class="sr-only" role="status" data-copy-status></p>
     </div>
-  </div>
-</section>
 
-<section id="questions" class="section" aria-labelledby="faq-title">
-  <div class="wrap grid">
-    <div class="intro">
-      <p class="meta label" data-reveal>{f.label}</p>
-      <h2 id="faq-title" class="h2" data-reveal>{f.title}</h2>
-    </div>
-    <div class="faq">
+    <div class="console" data-install>
+      <div class="bar">
+        <div class="platforms" role="tablist" aria-label={i.label}>
+          {
+            i.platforms.map((p, n) => (
+              <button
+                type="button"
+                role="tab"
+                id={`os-tab-${p.id}`}
+                aria-controls={`os-${p.id}`}
+                aria-selected={n === 0 ? 'true' : 'false'}
+                tabindex={n === 0 ? 0 : -1}
+                data-os={p.id}
+              >
+                {p.name}
+              </button>
+            ))
+          }
+        </div>
+        <a class="all meta" href={RELEASE_URL} rel="noopener">{i.release.all} <span aria-hidden="true">↗</span></a>
+      </div>
+
       {
-        f.items.map((q, n) => (
-          <details>
-            <summary>
-              <span class="meta">Q.{String(n + 1).padStart(3, '0')}</span>
-              <span class="slash" aria-hidden="true">
-                /
-              </span>
-              <span class="q">{q.q}</span>
-              <span class="toggle" aria-hidden="true" />
-            </summary>
-            <p>{q.a}</p>
-          </details>
+        i.platforms.map((p, n) => (
+          <div class="panel" role="tabpanel" id={`os-${p.id}`} aria-labelledby={`os-tab-${p.id}`} hidden={n !== 0} data-os-panel={p.id}>
+            {p.methods.map((m, mi) => (
+              <article class="method" data-soon={m.s === 'soon' ? '' : undefined}>
+                <header class="m-head">
+                  <span class="meta idx">{String(mi + 1).padStart(2, '0')}</span>
+                  <h3>{m.k}</h3>
+                  <span class="pill" data-s={m.s === 'ok' ? 'done' : 'wip'}>
+                    {i.status[m.s]}
+                  </span>
+                </header>
+                <p class="note">{m.note}</p>
+                {m.files && (
+                  <ul class="files" role="list">
+                    {m.files.map((file) => (
+                      <li>
+                        <a class="file" href={`${DOWNLOAD_URL}/${file.name}`} rel="noopener">
+                          <span class="dl" aria-hidden="true">
+                            ↓
+                          </span>
+                          <span class="mono fname">{file.name}</span>
+                          <span class="meta">{file.size}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <ol class="steps" role="list">
+                  {m.steps.map((st) => (
+                    <li>
+                      <span class="meta step">{st.k}</span>
+                      <div class="line">
+                        <code tabindex="0">
+                          <span class="prompt" aria-hidden="true">
+                            $
+                          </span>
+                          {st.cmd}
+                        </code>
+                        <button type="button" class="copy" data-copy={st.cmd} data-copied={i.copied} aria-label={`${i.copy} : ${st.cmd}`}>
+                          {i.copy}
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </article>
+            ))}
+          </div>
         ))
       }
     </div>
+
+    <div class="aside">
+      {
+        [i.first, i.verify].map((b) => (
+          <div class="card">
+            <h3>{b.k}</h3>
+            <div class="line">
+              <code tabindex="0">
+                <span class="prompt" aria-hidden="true">
+                  $
+                </span>
+                {b.cmd}
+              </code>
+              <button type="button" class="copy" data-copy={b.cmd} data-copied={i.copied} aria-label={`${i.copy} : ${b.cmd}`}>
+                {i.copy}
+              </button>
+            </div>
+            <p class="note">{b.note}</p>
+          </div>
+        ))
+      }
+    </div>
+    <p class="sr-only" role="status" data-copy-status></p>
   </div>
 </section>
 
 <script>
+  // Copy buttons.
   document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) => {
     const label = b.textContent ?? '';
     b.addEventListener('click', async () => {
@@ -93,51 +147,230 @@ const f = t.faq;
       }
     });
   });
+
+  // Platform tabs: roving tabindex, arrows, Home/End; preselect the visitor's OS.
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-install] [role="tab"]')];
+  const select = (tab: HTMLButtonElement, focus = false) => {
+    tabs.forEach((x) => {
+      const on = x === tab;
+      x.setAttribute('aria-selected', String(on));
+      x.tabIndex = on ? 0 : -1;
+      const panel = document.querySelector<HTMLElement>(`[data-os-panel="${x.dataset['os']}"]`);
+      if (panel) panel.hidden = !on;
+    });
+    if (focus) tab.focus();
+  };
+  tabs.forEach((tab, n) => {
+    tab.addEventListener('click', () => select(tab));
+    tab.addEventListener('keydown', (e) => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      const edge = e.key === 'Home' ? tabs[0] : e.key === 'End' ? tabs[tabs.length - 1] : undefined;
+      const next = edge ?? (d ? tabs[(n + d + tabs.length) % tabs.length] : undefined);
+      if (!next) return;
+      e.preventDefault();
+      select(next, true);
+    });
+  });
+  const ua = navigator.userAgent;
+  const guess = /Mac OS X|Macintosh/.test(ua) && !/iPhone|iPad/.test(ua) ? 'macos' : /Linux|X11/.test(ua) && !/Android/.test(ua) ? 'linux' : null;
+  const pre = tabs.find((x) => x.dataset['os'] === guess);
+  if (pre) select(pre);
 </script>
 
 <style>
-  .intro {
-    grid-column: 1 / span 5;
+  .col-label {
+    grid-column: 1 / span 3;
+    padding-top: 0.8em;
+    align-self: start;
+  }
+  .col-main {
+    grid-column: 4 / span 8;
     display: grid;
     gap: var(--space-5);
-    align-content: start;
-    padding-right: var(--space-6);
   }
-  .term {
-    grid-column: 6 / span 7;
-    min-width: 0;
+  .release {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+  }
+  .release a {
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-strong);
+    transition: border-color var(--motion-fast) var(--ease-standard);
+  }
+  .release a:hover {
+    border-color: var(--accent);
+  }
+  .ver {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-primary);
+  }
+  .sep {
+    color: var(--text-meta);
+  }
+
+  .console {
+    margin-top: clamp(48px, 6vw, 88px);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg);
     background: var(--bg-surface);
     overflow: hidden;
   }
-  .term-head {
+  .bar {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    padding: var(--space-2) var(--space-4);
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-3);
     border-bottom: 1px solid var(--border-subtle);
+    background: color-mix(in srgb, var(--bg-base) 40%, var(--bg-surface));
+  }
+  .platforms {
+    display: flex;
+    gap: var(--space-1);
+  }
+  [role='tab'] {
+    height: 36px;
+    padding-inline: var(--space-4);
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    transition:
+      background-color var(--motion-fast) var(--ease-standard),
+      color var(--motion-fast) var(--ease-standard);
+  }
+  [role='tab']:hover {
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+  }
+  [role='tab'][aria-selected='true'] {
+    color: var(--text-primary);
+    background: var(--bg-selected);
+    box-shadow: inset 0 -2px 0 var(--accent);
+  }
+  .all {
+    white-space: nowrap;
+    transition: color var(--motion-fast) var(--ease-standard);
+  }
+  .all:hover {
+    color: var(--text-primary);
+  }
+  .panel[hidden] {
+    display: none;
+  }
+  .panel {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    animation: fade var(--motion-slow) var(--ease-standard);
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+  .method {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    min-width: 0;
+    padding: var(--space-5);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .method:nth-child(odd) {
+    border-right: 1px solid var(--border-subtle);
+  }
+  .panel > .method:only-child {
+    grid-column: 1 / -1;
+    border-right: 0;
+  }
+  .m-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .m-head h3 {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    font-weight: 550;
+    letter-spacing: -0.02em;
+    margin-right: auto;
+  }
+  .note {
+    font-size: var(--fs-ui-sm);
+    color: var(--text-secondary);
+    max-width: 62ch;
+    text-wrap: pretty;
+  }
+  .method[data-soon] .line code {
+    color: var(--text-secondary);
+  }
+  .files {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .file {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-strong);
+    transition:
+      background-color var(--motion-fast) var(--ease-standard),
+      border-color var(--motion-fast) var(--ease-standard);
+  }
+  .file:hover {
+    background: var(--bg-elevated);
+    border-color: var(--accent);
+  }
+  .dl {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    color: var(--text-on-accent);
+    font-size: var(--text-sm);
+  }
+  .fname {
+    font-size: var(--text-sm);
+    margin-right: auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .steps {
     margin: 0;
-    padding: var(--space-4) var(--space-4) 0;
+    padding: 0;
     list-style: none;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
   .steps > li {
     min-width: 0;
   }
   .step {
     display: block;
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-1);
   }
   .line {
     min-width: 0;
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
     border-radius: var(--radius-md);
     background: var(--bg-base);
     border: 1px solid var(--border-subtle);
@@ -147,7 +380,8 @@ const f = t.faq;
     min-width: 0;
     overflow-x: auto;
     white-space: nowrap;
-    font-size: var(--text-md);
+    font-size: var(--text-sm);
+    line-height: 2;
     color: var(--text-primary);
     user-select: all;
     scrollbar-width: none;
@@ -176,107 +410,49 @@ const f = t.faq;
   .copy:global(.done) {
     color: var(--status-connected);
   }
-  .note {
-    padding: var(--space-4);
-    font-size: var(--fs-ui-sm);
-    color: var(--text-meta);
-  }
-  .faq {
-    grid-column: 6 / span 7;
-    border-top: 1px solid var(--line);
-  }
-  details {
-    border-bottom: 1px solid var(--line);
-  }
-  summary {
+  .aside {
     display: grid;
-    grid-template-columns: auto auto 1fr auto;
-    align-items: center;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-3);
-    min-height: 60px;
-    padding: var(--space-3) 0;
-    cursor: pointer;
-    list-style: none;
+    margin-top: var(--space-3);
   }
-  summary::-webkit-details-marker {
-    display: none;
+  .card {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    min-width: 0;
+    padding: var(--space-5);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
   }
-  .slash {
-    color: var(--border-strong);
-    font-family: var(--font-mono);
-  }
-  .q {
-    font-family: var(--font-mono);
-    font-size: var(--fs-ui-sm);
-    text-transform: uppercase;
-    letter-spacing: 0.01em;
-  }
-  summary:hover .q {
-    color: var(--accent);
-  }
-  .toggle {
-    position: relative;
-    width: 20px;
-    height: 20px;
-    border-radius: var(--radius-sm);
-    background: var(--bg-elevated);
-  }
-  .toggle::before,
-  .toggle::after {
-    content: '';
-    position: absolute;
-    left: 5px;
-    top: 9.5px;
-    width: 10px;
-    height: 1px;
-    background: var(--text-secondary);
-    transition: transform var(--motion-base) var(--ease-standard);
-  }
-  .toggle::after {
-    transform: rotate(90deg);
-  }
-  details[open] .toggle::after {
-    transform: rotate(0deg);
-  }
-  details p {
-    padding: 0 var(--space-7) var(--space-5) calc(var(--space-7) + var(--space-3));
-    color: var(--text-secondary);
-    max-width: 68ch;
-    animation: open var(--motion-base) var(--ease-standard);
-  }
-  @keyframes open {
-    from {
-      opacity: 0;
-      transform: translateY(-4px);
-    }
+  .card h3 {
+    font-size: var(--fs-ui-lg);
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
   @media (max-width: 1000px) {
-    .intro,
-    .term,
-    .faq {
+    .col-label,
+    .col-main {
       grid-column: 1 / -1;
     }
-    .intro {
-      padding-right: 0;
-      margin-bottom: var(--space-6);
+    .panel,
+    .aside {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .method:nth-child(odd) {
+      border-right: 0;
     }
   }
   @media (max-width: 560px) {
-    .slash {
-      display: none;
+    .bar {
+      flex-wrap: wrap;
     }
-    summary {
-      grid-template-columns: 1fr auto;
+    [role='tab'] {
+      padding-inline: var(--space-3);
     }
-    summary .meta {
-      grid-column: 1 / -1;
-    }
-    details p {
-      padding-left: 0;
-      padding-right: 0;
-    }
-    .q {
-      font-size: 13px;
+    .method,
+    .card {
+      padding: var(--space-4);
     }
   }
 </style>

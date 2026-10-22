@@ -1,0 +1,148 @@
+---
+import type { Dict } from '../i18n/content.ts';
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const f = t.faq;
+---
+
+<section id="questions" class="section" aria-labelledby="faq-title">
+  <div class="wrap grid">
+    <div class="intro">
+      <p class="meta label" data-reveal>{f.label}</p>
+      <h2 id="faq-title" class="h2" data-reveal>{f.title}</h2>
+    </div>
+    <div class="faq">
+      {
+        f.items.map((q, n) => (
+          <details>
+            <summary>
+              <span class="meta">Q.{String(n + 1).padStart(3, '0')}</span>
+              <span class="slash" aria-hidden="true">
+                /
+              </span>
+              <span class="q">{q.q}</span>
+              <span class="toggle" aria-hidden="true" />
+            </summary>
+            <p>{q.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .intro {
+    grid-column: 1 / span 5;
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+    padding-right: var(--space-6);
+  }
+  .faq {
+    grid-column: 6 / span 7;
+    border-top: 1px solid var(--line);
+  }
+  details {
+    border-bottom: 1px solid var(--line);
+  }
+  summary {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 60px;
+    padding: var(--space-3) 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .slash {
+    color: var(--border-strong);
+    font-family: var(--font-mono);
+  }
+  .q {
+    font-family: var(--font-mono);
+    font-size: var(--fs-ui-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+  summary:hover .q {
+    color: var(--accent);
+  }
+  .toggle {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+  }
+  .toggle::before,
+  .toggle::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 9.5px;
+    width: 10px;
+    height: 1px;
+    background: var(--text-secondary);
+    transition: transform var(--motion-base) var(--ease-standard);
+  }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 9.5px;
+    width: 10px;
+    height: 1px;
+    background: var(--text-secondary);
+    transition: transform var(--motion-base) var(--ease-standard);
+  }
+  details[open] .toggle::after {
+    transform: rotate(0deg);
+  }
+  details p {
+    padding: 0 var(--space-7) var(--space-5) calc(var(--space-7) + var(--space-3));
+    color: var(--text-secondary);
+    max-width: 68ch;
+    animation: open var(--motion-base) var(--ease-standard);
+  }
+  @keyframes open {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+  @media (max-width: 1000px) {
+    .intro,
+    .faq {
+      grid-column: 1 / -1;
+    }
+    .intro {
+      padding-right: 0;
+      margin-bottom: var(--space-6);
+    }
+  }
+  @media (max-width: 560px) {
+    .slash {
+      display: none;
+    }
+    summary {
+      grid-template-columns: 1fr auto;
+    }
+    summary .meta {
+      grid-column: 1 / -1;
+    }
+    details p {
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .q {
+      font-size: 13px;
+    }
+  }
+</style>

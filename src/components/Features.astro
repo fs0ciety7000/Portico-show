@@ -10,6 +10,7 @@ const counts = {
   wip: f.items.filter((i) => i.s === 'wip').length,
   next: f.items.filter((i) => i.s === 'next').length,
 };
+const mvpCount = f.items.filter((i) => i.g === 'mvp').length;
 ---
 
 <section id="fonctionnalites" class="section" aria-labelledby="features-title">
@@ -34,28 +35,38 @@ const counts = {
       </div>
     </div>
 
-    <ol class="list" role="list">
+    <div class="lists">
       {
-        f.items.map((it, i) => (
-          <li class="row" data-s={it.s}>
-            <details>
-              <summary>
-                <span class="meta num">F.{String(i + 1).padStart(3, '0')}</span>
-                <span class="slash" aria-hidden="true">
-                  /
-                </span>
-                <span class="name">{it.t}</span>
-                <span class="pill" data-s={it.s}>
-                  {f.legend[it.s]}
-                </span>
-                <span class="toggle" aria-hidden="true" />
-              </summary>
-              <p class="desc">{it.d}</p>
-            </details>
-          </li>
+        (['mvp', 'after'] as const).map((g) => (
+          <div class="group">
+            <h3 class="meta group-title">{f.groups[g]}</h3>
+            <ol class="list" role="list" start={g === 'mvp' ? 1 : mvpCount + 1}>
+              {f.items
+                .map((it, i) => ({ it, i }))
+                .filter(({ it }) => it.g === g)
+                .map(({ it, i }) => (
+                  <li class="row" data-s={it.s}>
+                    <details>
+                      <summary>
+                        <span class="meta num">F.{String(i + 1).padStart(3, '0')}</span>
+                        <span class="slash" aria-hidden="true">
+                          /
+                        </span>
+                        <span class="name">{it.t}</span>
+                        <span class="pill" data-s={it.s}>
+                          {f.legend[it.s]}
+                        </span>
+                        <span class="toggle" aria-hidden="true" />
+                      </summary>
+                      <p class="desc">{it.d}</p>
+                    </details>
+                  </li>
+                ))}
+            </ol>
+          </div>
         ))
       }
-    </ol>
+    </div>
   </div>
 </section>
 
@@ -87,8 +98,16 @@ const counts = {
     font-size: var(--text-sm);
     color: var(--text-meta);
   }
-  .list {
+  .lists {
     grid-column: 6 / span 7;
+    display: grid;
+    gap: clamp(48px, 6vw, 80px);
+  }
+  .group-title {
+    margin-bottom: var(--space-4);
+    color: var(--accent);
+  }
+  .list {
     margin: 0;
     padding: 0;
     list-style: none;
@@ -170,7 +189,7 @@ const counts = {
   }
   @media (max-width: 1000px) {
     .side,
-    .list {
+    .lists {
       grid-column: 1 / -1;
     }
     .sticky {
