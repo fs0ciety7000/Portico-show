@@ -4,7 +4,7 @@
 # do not edit it in the AUR: the release workflow overwrites it.
 
 pkgname=portico-bin
-pkgver=0.2.0
+pkgver=0.2.1
 pkgrel=1
 pkgdesc='Local-first, keyboard-first SSH session manager (terminal UI)'
 arch=('x86_64' 'aarch64')
@@ -20,8 +20,8 @@ conflicts=('portico')
 options=('!debug' '!strip')
 source_x86_64=("${url}/releases/download/v${pkgver}/portico-${pkgver}-x86_64-unknown-linux-gnu.tar.gz")
 source_aarch64=("${url}/releases/download/v${pkgver}/portico-${pkgver}-aarch64-unknown-linux-gnu.tar.gz")
-sha256sums_x86_64=('26bdaa84a038b182ce3188be9ddf8cb267ea0d27f3896c2e96b429d8488d559c')
-sha256sums_aarch64=('bf2d3e4d62bafc66e4079d05c78255d5e0100b5332122120e9feaa018b09686b')
+sha256sums_x86_64=('25153ab676b5cb00a239caa51542186424157e80287a8b5f68881fd2d7f51707')
+sha256sums_aarch64=('25685e3bdf01f23674b19900408749acf5a25683c6c2d1ff49dc91a34cf8ab6b')
 
 package() {
   cd "portico-${pkgver}-${CARCH}-unknown-linux-gnu"
