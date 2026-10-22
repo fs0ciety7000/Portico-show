@@ -139,7 +139,8 @@ const fr = {
       { g: 'after', s: 'done', t: 'Import depuis Termius', d: 'portico import termius génère un fichier à inclure dans votre config et reprend tags et groupes. Aucun secret n’est importé.' },
       { g: 'after', s: 'done', t: 'Split panes', d: 'Jusqu’à 8 panneaux par onglet, sur la même session ou un autre hôte, au clavier comme à la souris, avec zoom.' },
       { g: 'after', s: 'wip', t: 'Enregistrement de sessions', d: 'Format asciicast v2, sur demande et par terminal, sortie seulement (jamais les saisies), indicateur REC visible. Moteur livré, relecture dans les UIs en cours.' },
-      { g: 'after', s: 'wip', t: 'Homebrew et AUR', d: 'Formule, cask et paquets -bin générés depuis chaque release. Publication du tap et des paquets AUR en cours.' },
+      { g: 'after', s: 'done', t: 'Homebrew', d: 'Tap fs0ciety7000/portico : formule pour la TUI et cask pour l’app de bureau, mis à jour depuis chaque release.' },
+      { g: 'after', s: 'wip', t: 'AUR', d: 'Paquets portico-bin et portico-gui-bin générés depuis chaque release. Publication sur l’AUR en cours.' },
       { g: 'after', s: 'next', t: 'Windows', d: 'Gestionnaire d’identifiants Windows, agent OpenSSH sur named pipe, permissions par ACL, Scoop et Winget.' },
     ] as { g: 'mvp' | 'after'; s: Status; t: string; d: string }[],
   },
@@ -235,7 +236,7 @@ const fr = {
       { n: '2', s: 'done', t: 'SFTP et tunnels', d: 'Explorateurs de fichiers, transferts streamés, forwarding -L et -R.' },
       { n: '3', s: 'done', t: 'Clés, secrets, snippets', d: 'Génération, copy-id, agent, vault chiffré de repli, snippets avec placeholders.' },
       { n: '4', s: 'done', t: 'Finition du MVP', d: 'Récents, favoris, logs et config effective, raccourcis configurables, paquets, audit sécurité final.' },
-      { n: '5', s: 'done', t: 'SOCKS5, import, distribution', d: 'Tunnel -D, import Termius, release v0.1.0. Tap Homebrew et AUR à publier.' },
+      { n: '5', s: 'done', t: 'SOCKS5, import, distribution', d: 'Tunnel -D, import Termius, release v0.1.0 et tap Homebrew. AUR à publier.' },
       { n: '6', s: 'wip', t: 'Terminal', d: 'Split panes livrés dans les deux UIs. Enregistrement asciicast : moteur livré, relecture en cours.' },
       { n: '7', s: 'drop', t: 'Synchronisation', d: 'Sync locale des métadonnées via un dossier : abandonnée, Portico reste strictement local.' },
       { n: '8', s: 'next', t: 'Windows', d: 'Credential Manager, agent sur named pipe, ACL, WebView2, Scoop et Winget.' },
@@ -256,8 +257,8 @@ const fr = {
         methods: [
           {
             k: 'Homebrew',
-            s: 'soon',
-            note: 'Le tap fs0ciety7000/portico est en cours de publication : ces commandes fonctionneront dès sa mise en ligne.',
+            s: 'ok',
+            note: 'La méthode la plus simple : le tap fs0ciety7000/portico installe la TUI (formule) et l’app de bureau (cask), et brew upgrade suit les nouvelles versions.',
             steps: [
               { k: 'TUI', cmd: 'brew install fs0ciety7000/portico/portico' },
               { k: 'GUI', cmd: 'brew install --cask fs0ciety7000/portico/portico' },
@@ -499,7 +500,8 @@ const en: Dict = {
       { g: 'after', s: 'done', t: 'Import from Termius', d: 'portico import termius writes a file to include in your config and keeps tags and groups. No secret is imported.' },
       { g: 'after', s: 'done', t: 'Split panes', d: 'Up to 8 panes per tab, on the same session or another host, from the keyboard or the mouse, with zoom.' },
       { g: 'after', s: 'wip', t: 'Session recording', d: 'asciicast v2, on demand and per terminal, output only (never keystrokes), a visible REC indicator. Engine shipped, replay in the UIs in progress.' },
-      { g: 'after', s: 'wip', t: 'Homebrew and AUR', d: 'Formula, cask and -bin packages generated from every release. Publishing the tap and the AUR packages is in progress.' },
+      { g: 'after', s: 'done', t: 'Homebrew', d: 'The fs0ciety7000/portico tap: a formula for the TUI and a cask for the desktop app, updated from every release.' },
+      { g: 'after', s: 'wip', t: 'AUR', d: 'portico-bin and portico-gui-bin packages generated from every release. Publishing on the AUR is in progress.' },
       { g: 'after', s: 'next', t: 'Windows', d: 'Windows Credential Manager, OpenSSH agent over a named pipe, ACL permissions, Scoop and Winget.' },
     ],
   },
@@ -595,7 +597,7 @@ const en: Dict = {
       { n: '2', s: 'done', t: 'SFTP and tunnels', d: 'File browsers, streamed transfers, -L and -R forwarding.' },
       { n: '3', s: 'done', t: 'Keys, secrets, snippets', d: 'Generation, copy-id, agent, encrypted fallback vault, snippets with placeholders.' },
       { n: '4', s: 'done', t: 'MVP polish', d: 'Recents, favourites, logs and effective config, configurable shortcuts, packages, final security audit.' },
-      { n: '5', s: 'done', t: 'SOCKS5, import, distribution', d: '-D tunnel, Termius import, v0.1.0 release. Homebrew tap and AUR still to publish.' },
+      { n: '5', s: 'done', t: 'SOCKS5, import, distribution', d: '-D tunnel, Termius import, v0.1.0 release and Homebrew tap. AUR still to publish.' },
       { n: '6', s: 'wip', t: 'Terminal', d: 'Split panes shipped in both UIs. asciicast recording: engine shipped, replay in progress.' },
       { n: '7', s: 'drop', t: 'Sync', d: 'Local metadata sync through a folder: dropped, Portico stays strictly local.' },
       { n: '8', s: 'next', t: 'Windows', d: 'Credential Manager, agent over a named pipe, ACLs, WebView2, Scoop and Winget.' },
@@ -616,8 +618,8 @@ const en: Dict = {
         methods: [
           {
             k: 'Homebrew',
-            s: 'soon',
-            note: 'The fs0ciety7000/portico tap is being published: these commands will work as soon as it is live.',
+            s: 'ok',
+            note: 'The easiest way: the fs0ciety7000/portico tap installs the TUI (formula) and the desktop app (cask), and brew upgrade follows new versions.',
             steps: [
               { k: 'TUI', cmd: 'brew install fs0ciety7000/portico/portico' },
               { k: 'GUI', cmd: 'brew install --cask fs0ciety7000/portico/portico' },
