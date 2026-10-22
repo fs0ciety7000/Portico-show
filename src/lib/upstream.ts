@@ -5,6 +5,7 @@
  * time: no request leaves the visitor's browser.
  */
 import data from '../data/upstream.json';
+import arch from '../data/arch.json';
 import type { Dict, InstallMethod, Platform, Status } from '../i18n/content.ts';
 
 export type PhaseStatus = 'done' | 'wip' | 'next' | 'drop';
@@ -57,7 +58,11 @@ export const channels = {
   homebrew: !!release && upstream.distribution.homebrew?.formula === version,
   homebrewCask: !!release && upstream.distribution.homebrew?.cask === version,
   aur: !!release && Object.values(upstream.distribution.aur ?? {}).some((v) => v?.startsWith(`${version}-`) ?? false),
+  /** PKGBUILDs rendered by scripts/render-arch.sh and served under /arch/ (while the AUR is out of reach). */
+  arch: !!release && arch.version === version,
 };
+
+const SITE = (import.meta.env.SITE as string | undefined)?.replace(/\/$/, '') ?? 'https://portico.dessenius.be';
 
 /** Install guide, rebuilt from the files of the latest release. */
 export function platforms(t: Dict): Platform[] {
@@ -110,15 +115,30 @@ export function platforms(t: Dict): Platform[] {
     ['arm64', deb('arm64')],
   ]);
   if (debSteps.length) linux.push({ k: i.names.deb, s: 'ok', note: i.notes.deb, steps: debSteps });
-  linux.push({
-    k: 'Arch Linux (AUR)',
-    s: channels.aur ? 'ok' : 'soon',
-    note: channels.aur ? i.notes.aur : i.notes.aurSoon,
-    steps: steps([
-      ['TUI', 'yay -S portico-bin'],
-      ['GUI', 'yay -S portico-gui-bin'],
-    ]),
-  });
+  if (channels.aur) {
+    linux.push({
+      k: 'Arch Linux (AUR)',
+      s: 'ok',
+      note: i.notes.aur,
+      steps: steps([
+        ['TUI', 'yay -S portico-bin'],
+        ['GUI', 'yay -S portico-gui-bin'],
+      ]),
+    });
+  }
+  if (channels.arch) {
+    const pkgbuild = (pkg: string) => `mkdir -p ${pkg} && cd ${pkg} && curl -LO ${SITE}/arch/${pkg}/PKGBUILD && makepkg -si`;
+    linux.push({
+      k: i.names.arch,
+      s: 'ok',
+      note: channels.aur ? i.notes.archAlt : i.notes.arch,
+      files: arch.packages.map((pkg) => ({ name: `${pkg}/PKGBUILD`, size: `v${arch.version}`, href: `/arch/${pkg}/PKGBUILD` })),
+      steps: steps([
+        ['TUI', pkgbuild('portico-bin')],
+        ['GUI', pkgbuild('portico-gui-bin')],
+      ]),
+    });
+  }
   const appimage = (arch: string) => {
     const a = asset(new RegExp(`_${arch}\\.AppImage$`));
     return a ? `curl -LO ${url(a.name)} && chmod +x ${a.name} && ./${a.name}` : null;

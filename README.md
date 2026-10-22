@@ -51,6 +51,11 @@ phases, matrice du MVP, nombre de tests et « Ensuite » viennent de `src/data/u
 - L'action `.github/workflows/sync-upstream.yml` tourne toutes les 30 minutes (et à la main, *Run workflow*) ; si
   l'instantané change, elle le commite sur `main` et Coolify redéploie.
 - En local : `NODE_USE_ENV_PROXY=1 node scripts/sync-upstream.mjs` (affiche `changed` ou `unchanged`).
+- **Arch Linux** : tant que l'AUR est inaccessible (inscriptions fermées), `scripts/render-arch.sh` rend les
+  PKGBUILD `portico-bin` et `portico-gui-bin` avec le `packaging/aur/render.sh` de Portico (au tag de la release,
+  sommes de `SHA256SUMS`) et les publie sous `/arch/` ; le site propose `makepkg -si`. Testé dans un conteneur
+  Arch : les deux paquets se construisent et s'installent (0.2.0-1). Dès que l'AUR porte la version courante,
+  le site affiche aussi `yay -S`.
 - Les textes des phases sont traduits dans `src/i18n/content.ts` (`roadmap.copy`) ; une phase nouvelle sans texte
   s'affiche avec son titre et sa première puce de `PLAN.md` (en français), le temps d'ajouter sa traduction.
 

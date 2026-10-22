@@ -24,7 +24,7 @@ export interface Platform {
 /** Post-MVP feature: its status follows a phase of PLAN.md, or a distribution channel. */
 export interface AfterFeature {
   phase?: string;
-  dist?: 'homebrew' | 'aur';
+  dist?: 'homebrew' | 'aur' | 'arch';
   t: string;
   d: string;
 }
@@ -147,7 +147,7 @@ const fr = {
       { phase: '6b', t: 'Hôtes créés dans Portico', d: 'Ajouter, modifier, dupliquer des hôtes dans Portico, rangés dans son propre hosts.conf. Votre ~/.ssh/config n’est toujours jamais écrit.' },
       { phase: '6b', t: 'Import Termius et Termix', d: 'portico import FICHIER détecte le format ; les hôtes importés deviennent modifiables. Les clés privées d’un export Termix seulement si vous les cochez.' },
       { dist: 'homebrew', t: 'Homebrew', d: 'Tap fs0ciety7000/portico : formule pour la TUI et cask pour l’app de bureau, mis à jour depuis chaque release.' },
-      { dist: 'aur', t: 'AUR', d: 'Paquets portico-bin et portico-gui-bin générés depuis chaque release.' },
+      { dist: 'arch', t: 'Paquets Arch Linux', d: 'portico-bin et portico-gui-bin, générés depuis chaque release et installables avec makepkg. L’AUR suivra dès la réouverture de ses inscriptions.' },
       { phase: '8', t: 'Windows', d: 'Gestionnaire d’identifiants Windows, agent OpenSSH sur named pipe, permissions par ACL, Scoop et Winget.' },
     ] as AfterFeature[],
   },
@@ -245,7 +245,7 @@ const fr = {
       '2': { t: 'SFTP et tunnels', d: 'Explorateurs de fichiers, transferts streamés, forwarding -L et -R.' },
       '3': { t: 'Clés, secrets, snippets', d: 'Génération, copy-id, agent, vault chiffré de repli, snippets avec placeholders.' },
       '4': { t: 'Finition du MVP', d: 'Récents, favoris, logs et config effective, raccourcis configurables, paquets, audit sécurité final.' },
-      '5': { t: 'SOCKS5, import, distribution', d: 'Tunnel -D, import Termius, release publique, Homebrew et AUR.' },
+      '5': { t: 'SOCKS5, import, distribution', d: 'Tunnel -D, import Termius, release publique, Homebrew et paquets Arch.' },
       '6': { t: 'Terminal', d: 'Split panes et enregistrement asciicast avec relecture, dans les deux UIs.' },
       '6b': { t: 'Hôtes Portico', d: 'Hôtes créés et modifiés dans Portico, import Termix avec clés sur sélection.' },
       '7': { t: 'Synchronisation', d: 'Sync locale des métadonnées via un dossier : abandonnée, Portico reste strictement local.' },
@@ -261,7 +261,7 @@ const fr = {
     lead: 'La version {v} est publiée pour macOS et Linux : l’app de bureau et le binaire de terminal. Choisissez votre système.',
     release: { notes: 'Notes de version', sums: 'SHA256SUMS', all: 'Tous les fichiers', synced: 'Suit automatiquement les releases du dépôt' },
     status: { ok: 'Disponible', soon: 'Bientôt' },
-    names: { dmg: 'App de bureau (.dmg)', tui: 'Terminal (TUI)', deb: 'Debian, Ubuntu (.deb)', source: 'Cargo et pnpm', sourceTab: 'Sources' },
+    names: { dmg: 'App de bureau (.dmg)', tui: 'Terminal (TUI)', deb: 'Debian, Ubuntu (.deb)', arch: 'Arch Linux (makepkg)', source: 'Cargo et pnpm', sourceTab: 'Sources' },
     labels: { allow: 'Autoriser', clone: 'Cloner' },
     notes: {
       brew: 'La méthode la plus simple : le tap installe la TUI (formule) et l’app de bureau (cask), et brew upgrade suit les nouvelles versions.',
@@ -271,7 +271,8 @@ const fr = {
       tuiMac: 'Un seul binaire, portico, à placer dans votre PATH.',
       deb: 'Debian 12+, Ubuntu 22.04+. Installe l’app de bureau portico-gui et son entrée de menu.',
       aur: 'Paquets binaires portico-bin (TUI) et portico-gui-bin (GUI), mis à jour à chaque release.',
-      aurSoon: 'Les paquets portico-bin et portico-gui-bin sont en cours de publication sur l’AUR.',
+      arch: 'Un vrai paquet pacman, sans passer par l’AUR (ses inscriptions sont fermées pour l’instant). Ce sont les PKGBUILD prévus pour l’AUR, générés depuis la release : makepkg télécharge ses fichiers, vérifie leurs sommes SHA-256 et installe le paquet. Lisez le PKGBUILD avant de lancer makepkg.',
+      archAlt: 'Sans aide AUR : les mêmes PKGBUILD, servis par ce site. makepkg vérifie les sommes SHA-256 et installe un paquet pacman.',
       appimage: 'Toute distribution avec glibc 2.35 ou plus. Autonome : embarque WebKitGTK.',
       tuiLinux: 'La variante gnu est recommandée (résolution par NSS : mDNS, sssd, LDAP). La variante musl, statique, tourne partout. Remplacez x86_64 par aarch64 sur ARM.',
       source: 'Rust 1.90 ou plus. Linux : la GUI demande libwebkit2gtk-4.1-dev.',
@@ -293,6 +294,7 @@ const fr = {
       { q: 'Pourquoi une TUI et une GUI ?', a: 'Parce que certains vivent dans tmux et d’autres dans des fenêtres. Le moteur est le même : comportement, sécurité et raccourcis identiques.' },
       { q: 'macOS dit que l’app ne peut pas être ouverte.', a: 'Les versions actuelles ne sont pas encore signées ni notarisées par Apple. Autorisez-la une fois dans Réglages Système → Confidentialité et sécurité, ou avec xattr -dr com.apple.quarantine /Applications/Portico.app.' },
       { q: 'Je viens de Termius ou de Termix, puis-je reprendre mes hôtes ?', a: 'Oui : portico import FICHIER, ou « Import hosts… » dans la GUI. Le format est détecté, les hôtes importés deviennent des hôtes Portico modifiables, tags et groupes compris. Aucun mot de passe n’est importé, et les clés privées d’un export Termix seulement si vous les cochez.' },
+      { q: 'Pourquoi Portico n’est-il pas sur l’AUR ?', a: 'Arch a fermé temporairement les inscriptions à l’AUR. En attendant, ce site sert les PKGBUILD qui y seront publiés, générés depuis chaque release : mkdir portico-bin && cd portico-bin, téléchargez le PKGBUILD, lisez-le, puis makepkg -si. Vous obtenez un paquet pacman normal, que la version AUR remplacera sans conflit.' },
       { q: 'Et Windows ?', a: 'C’est la phase 8 de la feuille de route : keyring Windows, agent OpenSSH, permissions par ACL, Scoop et Winget.' },
       { q: 'Quelle est la licence ?', a: 'MIT OR Apache-2.0, au choix.' },
     ],
@@ -438,7 +440,7 @@ const en: Dict = {
       { phase: '6b', t: 'Hosts created in Portico', d: 'Add, edit and duplicate hosts in Portico, kept in its own hosts.conf. Your ~/.ssh/config is still never written.' },
       { phase: '6b', t: 'Termius and Termix import', d: 'portico import FILE detects the format; imported hosts become editable. Private keys from a Termix export only if you tick them.' },
       { dist: 'homebrew', t: 'Homebrew', d: 'The fs0ciety7000/portico tap: a formula for the TUI and a cask for the desktop app, updated from every release.' },
-      { dist: 'aur', t: 'AUR', d: 'portico-bin and portico-gui-bin packages generated from every release.' },
+      { dist: 'arch', t: 'Arch Linux packages', d: 'portico-bin and portico-gui-bin, generated from every release and installed with makepkg. The AUR will follow once its registration reopens.' },
       { phase: '8', t: 'Windows', d: 'Windows Credential Manager, OpenSSH agent over a named pipe, ACL permissions, Scoop and Winget.' },
     ],
   },
@@ -536,7 +538,7 @@ const en: Dict = {
       '2': { t: 'SFTP and tunnels', d: 'File browsers, streamed transfers, -L and -R forwarding.' },
       '3': { t: 'Keys, secrets, snippets', d: 'Generation, copy-id, agent, encrypted fallback vault, snippets with placeholders.' },
       '4': { t: 'MVP polish', d: 'Recents, favourites, logs and effective config, configurable shortcuts, packages, final security audit.' },
-      '5': { t: 'SOCKS5, import, distribution', d: '-D tunnel, Termius import, public release, Homebrew and AUR.' },
+      '5': { t: 'SOCKS5, import, distribution', d: '-D tunnel, Termius import, public release, Homebrew and Arch packages.' },
       '6': { t: 'Terminal', d: 'Split panes and asciicast recording with replay, in both UIs.' },
       '6b': { t: 'Portico hosts', d: 'Hosts created and edited in Portico, Termix import with opt-in keys.' },
       '7': { t: 'Sync', d: 'Local metadata sync through a folder: dropped, Portico stays strictly local.' },
@@ -560,7 +562,7 @@ const en: Dict = {
     lead: 'Version {v} is out for macOS and Linux: the desktop app and the terminal binary. Pick your system.',
     release: { notes: 'Release notes', sums: 'SHA256SUMS', all: 'All files', synced: 'Follows the repository’s releases automatically' },
     status: { ok: 'Available', soon: 'Soon' },
-    names: { dmg: 'Desktop app (.dmg)', tui: 'Terminal (TUI)', deb: 'Debian, Ubuntu (.deb)', source: 'Cargo and pnpm', sourceTab: 'Source' },
+    names: { dmg: 'Desktop app (.dmg)', tui: 'Terminal (TUI)', deb: 'Debian, Ubuntu (.deb)', arch: 'Arch Linux (makepkg)', source: 'Cargo and pnpm', sourceTab: 'Source' },
     labels: { allow: 'Allow', clone: 'Clone' },
     notes: {
       brew: 'The easiest way: the tap installs the TUI (formula) and the desktop app (cask), and brew upgrade follows new versions.',
@@ -570,7 +572,8 @@ const en: Dict = {
       tuiMac: 'A single binary, portico, to put on your PATH.',
       deb: 'Debian 12+, Ubuntu 22.04+. Installs the portico-gui desktop app and its menu entry.',
       aur: 'Binary packages portico-bin (TUI) and portico-gui-bin (GUI), updated with every release.',
-      aurSoon: 'The portico-bin and portico-gui-bin packages are being published on the AUR.',
+      arch: 'A real pacman package, without the AUR (its registration is closed for now). These are the PKGBUILDs meant for the AUR, generated from the release: makepkg downloads its files, checks their SHA-256 sums and installs the package. Read the PKGBUILD before running makepkg.',
+      archAlt: 'No AUR helper needed: the same PKGBUILDs, served by this site. makepkg checks the SHA-256 sums and installs a pacman package.',
       appimage: 'Any distribution with glibc 2.35 or later. Self-contained: it ships WebKitGTK.',
       tuiLinux: 'The gnu build is recommended (name resolution through NSS: mDNS, sssd, LDAP). The static musl build runs anywhere. Replace x86_64 with aarch64 on ARM.',
       source: 'Rust 1.90 or later. Linux: the GUI needs libwebkit2gtk-4.1-dev.',
@@ -592,6 +595,7 @@ const en: Dict = {
       { q: 'Why both a TUI and a GUI?', a: 'Because some people live in tmux and others in windows. The engine is the same: identical behaviour, security and shortcuts.' },
       { q: 'macOS says the app cannot be opened.', a: 'Current versions are not signed or notarised by Apple yet. Allow it once in System Settings → Privacy & Security, or with xattr -dr com.apple.quarantine /Applications/Portico.app.' },
       { q: 'I come from Termius or Termix, can I bring my hosts?', a: 'Yes: portico import FILE, or “Import hosts…” in the GUI. The format is detected and imported hosts become editable Portico hosts, tags and groups included. No password is imported, and private keys from a Termix export only if you tick them.' },
+      { q: 'Why is Portico not on the AUR?', a: 'Arch has temporarily closed AUR registration. Meanwhile this site serves the PKGBUILDs that will be published there, generated from every release: mkdir portico-bin && cd portico-bin, download the PKGBUILD, read it, then makepkg -si. You get a regular pacman package that the AUR one will replace without conflict.' },
       { q: 'What about Windows?', a: 'It is phase 8 of the roadmap: Windows keyring, OpenSSH agent, ACL permissions, Scoop and Winget.' },
       { q: 'What is the licence?', a: 'MIT OR Apache-2.0, at your option.' },
     ],
