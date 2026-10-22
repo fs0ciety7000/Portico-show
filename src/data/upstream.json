@@ -1,56 +1,56 @@
 {
-  "syncedAt": "2026-10-22T22:42:53.618Z",
+  "syncedAt": "2026-10-22T23:04:30.412Z",
   "repo": "fs0ciety7000/Portico",
   "release": {
-    "version": "0.2.0",
-    "tag": "v0.2.0",
-    "name": "Portico 0.2.0",
-    "date": "2026-10-22T21:57:09Z",
-    "url": "https://github.com/fs0ciety7000/Portico/releases/tag/v0.2.0",
+    "version": "0.2.1",
+    "tag": "v0.2.1",
+    "name": "Portico 0.2.1",
+    "date": "2026-10-22T23:01:17Z",
+    "url": "https://github.com/fs0ciety7000/Portico/releases/tag/v0.2.1",
     "assets": [
       {
-        "name": "portico-0.2.0-aarch64-apple-darwin.tar.gz",
-        "size": 4804230
+        "name": "portico-0.2.1-aarch64-apple-darwin.tar.gz",
+        "size": 4804638
       },
       {
-        "name": "portico-0.2.0-aarch64-unknown-linux-gnu.tar.gz",
-        "size": 5673073
+        "name": "portico-0.2.1-aarch64-unknown-linux-gnu.tar.gz",
+        "size": 5672100
       },
       {
-        "name": "portico-0.2.0-aarch64-unknown-linux-musl.tar.gz",
-        "size": 5693976
+        "name": "portico-0.2.1-aarch64-unknown-linux-musl.tar.gz",
+        "size": 5693353
       },
       {
-        "name": "portico-0.2.0-x86_64-apple-darwin.tar.gz",
-        "size": 5292683
+        "name": "portico-0.2.1-x86_64-apple-darwin.tar.gz",
+        "size": 5292874
       },
       {
-        "name": "portico-0.2.0-x86_64-unknown-linux-gnu.tar.gz",
-        "size": 6101115
+        "name": "portico-0.2.1-x86_64-unknown-linux-gnu.tar.gz",
+        "size": 6101487
       },
       {
-        "name": "portico-0.2.0-x86_64-unknown-linux-musl.tar.gz",
-        "size": 6222430
+        "name": "portico-0.2.1-x86_64-unknown-linux-musl.tar.gz",
+        "size": 6222491
       },
       {
-        "name": "Portico_0.2.0_aarch64.AppImage",
-        "size": 83892744
+        "name": "Portico_0.2.1_aarch64.AppImage",
+        "size": 83896840
       },
       {
-        "name": "Portico_0.2.0_amd64.AppImage",
-        "size": 86166008
+        "name": "Portico_0.2.1_amd64.AppImage",
+        "size": 86174200
       },
       {
-        "name": "Portico_0.2.0_amd64.deb",
-        "size": 8304660
+        "name": "Portico_0.2.1_amd64.deb",
+        "size": 8307178
       },
       {
-        "name": "Portico_0.2.0_arm64.deb",
-        "size": 7932074
+        "name": "Portico_0.2.1_arm64.deb",
+        "size": 7935046
       },
       {
-        "name": "Portico_0.2.0_universal-unsigned.dmg",
-        "size": 14294073
+        "name": "Portico_0.2.1_universal-unsigned.dmg",
+        "size": 14294045
       },
       {
         "name": "SHA256SUMS",
@@ -61,8 +61,8 @@
   "distribution": {
     "homebrew": {
       "tap": "fs0ciety7000/portico",
-      "formula": "0.2.0",
-      "cask": "0.2.0"
+      "formula": "0.2.1",
+      "cask": "0.2.1"
     },
     "aur": {
       "portico-bin": null,
