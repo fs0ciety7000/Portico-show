@@ -1,0 +1,46 @@
+# Keeps the site in step with the Portico repository: latest release, install
+# commands, phase statuses, tests and roadmap (scripts/sync-upstream.mjs).
+# When the snapshot changes it is committed to main, and Coolify redeploys the
+# site on that push. Nothing else is touched.
+name: Sync with Portico
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+  # Lets the Portico release workflow ask for an immediate sync (optional).
+  repository_dispatch:
+    types: [portico-release]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Read the Portico repository
+        id: sync
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: echo "result=$(node scripts/sync-upstream.mjs | tail -n1)" >> "$GITHUB_OUTPUT"
+      - name: Commit the new snapshot
+        if: steps.sync.outputs.result == 'changed'
+        run: |
+          version=$(node -p "require('./src/data/upstream.json').release?.tag ?? 'unknown'")
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/upstream.json
+          git commit -m "chore(data): sync with Portico ${version}"
+          git push origin HEAD:main

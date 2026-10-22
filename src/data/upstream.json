@@ -1,0 +1,266 @@
+{
+  "syncedAt": "2026-10-22T22:42:53.618Z",
+  "repo": "fs0ciety7000/Portico",
+  "release": {
+    "version": "0.2.0",
+    "tag": "v0.2.0",
+    "name": "Portico 0.2.0",
+    "date": "2026-10-22T21:57:09Z",
+    "url": "https://github.com/fs0ciety7000/Portico/releases/tag/v0.2.0",
+    "assets": [
+      {
+        "name": "portico-0.2.0-aarch64-apple-darwin.tar.gz",
+        "size": 4804230
+      },
+      {
+        "name": "portico-0.2.0-aarch64-unknown-linux-gnu.tar.gz",
+        "size": 5673073
+      },
+      {
+        "name": "portico-0.2.0-aarch64-unknown-linux-musl.tar.gz",
+        "size": 5693976
+      },
+      {
+        "name": "portico-0.2.0-x86_64-apple-darwin.tar.gz",
+        "size": 5292683
+      },
+      {
+        "name": "portico-0.2.0-x86_64-unknown-linux-gnu.tar.gz",
+        "size": 6101115
+      },
+      {
+        "name": "portico-0.2.0-x86_64-unknown-linux-musl.tar.gz",
+        "size": 6222430
+      },
+      {
+        "name": "Portico_0.2.0_aarch64.AppImage",
+        "size": 83892744
+      },
+      {
+        "name": "Portico_0.2.0_amd64.AppImage",
+        "size": 86166008
+      },
+      {
+        "name": "Portico_0.2.0_amd64.deb",
+        "size": 8304660
+      },
+      {
+        "name": "Portico_0.2.0_arm64.deb",
+        "size": 7932074
+      },
+      {
+        "name": "Portico_0.2.0_universal-unsigned.dmg",
+        "size": 14294073
+      },
+      {
+        "name": "SHA256SUMS",
+        "size": 1219
+      }
+    ]
+  },
+  "distribution": {
+    "homebrew": {
+      "tap": "fs0ciety7000/portico",
+      "formula": "0.2.0",
+      "cask": "0.2.0"
+    },
+    "aur": {
+      "portico-bin": null,
+      "portico-gui-bin": null
+    }
+  },
+  "phases": [
+    {
+      "id": "0",
+      "title": "fondations",
+      "status": "done",
+      "summary": "Choix de stack documenté (docs/STACK.md)"
+    },
+    {
+      "id": "1",
+      "title": "connexion interactive (cœur du produit)",
+      "status": "done",
+      "summary": ""
+    },
+    {
+      "id": "2",
+      "title": "SFTP et forwarding",
+      "status": "done",
+      "summary": "sftp/ : un client par session, list, stat, mkdir, rename, remove, transferts streamés"
+    },
+    {
+      "id": "3",
+      "title": "clés, secrets et snippets",
+      "status": "done",
+      "summary": "Génération : ed25519 (défaut), RSA 3072–8192, ECDSA P-256/384/521, passphrase (format OpenSSH, bcrypt-pbkdf),"
+    },
+    {
+      "id": "4",
+      "title": "finition MVP",
+      "status": "done",
+      "summary": "Sessions récentes (state/recent.toml, 50 entrées), favoris ( / ⌘D), édition des tags, groupes et notes (e) dans"
+    },
+    {
+      "id": "5",
+      "title": "gains rapides et distribution",
+      "status": "done",
+      "summary": "-D (SOCKS5) dans forward/ : SOCKS5 sans authentification (CONNECT, IPv4/IPv6/domaine), écoute sur localhost"
+    },
+    {
+      "id": "6",
+      "title": "terminal",
+      "status": "done",
+      "summary": "Split panes : divisions horizontales et verticales dans un onglet, focus et redimensionnement au clavier, chaque"
+    },
+    {
+      "id": "6b",
+      "title": "hôtes gérés par Portico",
+      "status": "done",
+      "summary": "Créer, modifier, dupliquer et supprimer des hôtes depuis la TUI et la GUI : alias, HostName, User, Port,"
+    },
+    {
+      "id": "7",
+      "title": "synchronisation locale optionnelle",
+      "status": "drop",
+      "summary": "Sync de hosts.toml, des snippets et des réglages via un dossier choisi (Syncthing, git…) : jamais de cloud imposé,"
+    },
+    {
+      "id": "8",
+      "title": "Windows",
+      "status": "next",
+      "summary": "Gestionnaire d'identifiants Windows (keyring), agent OpenSSH sur named pipe, WebView2, chemins %USERPROFILE%\\.ssh"
+    }
+  ],
+  "mvp": [
+    {
+      "n": 1,
+      "name": "Parsing de ~/.ssh/config (ProxyJump, wildcards, héritage, Include, Match)",
+      "status": "done"
+    },
+    {
+      "n": 2,
+      "name": "Recherche floue, tags et groupes",
+      "status": "done"
+    },
+    {
+      "n": 3,
+      "name": "Connexion SSH interactive (PTY)",
+      "status": "done"
+    },
+    {
+      "n": 4,
+      "name": "SFTP : explorateur, upload, download",
+      "status": "done"
+    },
+    {
+      "n": 5,
+      "name": "Clés locales, ssh-agent, certificats",
+      "status": "done"
+    },
+    {
+      "n": 6,
+      "name": "Génération de clés (ed25519 / rsa ≥ 3072 / ecdsa) avec passphrase",
+      "status": "done"
+    },
+    {
+      "n": 7,
+      "name": "Copie de clé publique (ssh-copy-id)",
+      "status": "done"
+    },
+    {
+      "n": 8,
+      "name": "Port forwarding local et distant",
+      "status": "done"
+    },
+    {
+      "n": 9,
+      "name": "Sessions récentes et favorites, onglets multi-sessions",
+      "status": "done"
+    },
+    {
+      "n": 10,
+      "name": "Snippets (CRUD, portée, placeholders, exécution)",
+      "status": "done"
+    },
+    {
+      "n": 11,
+      "name": "Statut de connexion et latence",
+      "status": "done"
+    },
+    {
+      "n": 12,
+      "name": "3 thèmes sombres et raccourcis documentés",
+      "status": "done"
+    },
+    {
+      "n": 13,
+      "name": "Secrets dans le keyring (vault chiffré en repli)",
+      "status": "done"
+    },
+    {
+      "n": 14,
+      "name": "Mode debug : logs de connexion par session",
+      "status": "done"
+    }
+  ],
+  "tests": {
+    "total": 672,
+    "interop": 13,
+    "e2e": "19/19"
+  },
+  "later": [
+    {
+      "theme": "Multi-hop avancé",
+      "items": [
+        "ProxyCommand arbitraire",
+        "Repli « system ssh » pour Match exec",
+        "Visualisation du chemin de hops avec latence par hop"
+      ]
+    },
+    {
+      "theme": "Forwarding",
+      "items": [
+        "Forwards persistants avec redémarrage auto",
+        "Forwarding d'agent"
+      ]
+    },
+    {
+      "theme": "Vault enrichi",
+      "items": [
+        "Plusieurs coffres",
+        "Export et import chiffrés",
+        "Déverrouillage biométrique"
+      ]
+    },
+    {
+      "theme": "Terminal",
+      "items": [
+        "Broadcast d'input multi-hôtes",
+        "Recherche dans le scrollback",
+        "Liens cliquables"
+      ]
+    },
+    {
+      "theme": "Plateformes",
+      "items": [
+        "Thème clair"
+      ]
+    },
+    {
+      "theme": "GUI native",
+      "items": [
+        "Réévaluation de gpui si la GUI web atteint ses limites de performance"
+      ]
+    },
+    {
+      "theme": "Intégrations",
+      "items": [
+        "Teleport ou certificats éphémères"
+      ]
+    }
+  ],
+  "evaluate": [
+    "Mosh",
+    "Snap / Flatpak"
+  ]
+}

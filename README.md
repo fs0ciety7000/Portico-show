@@ -41,6 +41,19 @@ public/shots/          # captures réelles de la GUI (mode démo), 3 thèmes
 design/                # source de la gravure du footer
 ```
 
+## Synchronisation avec le dépôt Portico
+
+Version, date et fichiers de la dernière release, commandes d'installation, statut Homebrew et AUR, statuts des
+phases, matrice du MVP, nombre de tests et « Ensuite » viennent de `src/data/upstream.json`, écrit par
+`scripts/sync-upstream.mjs` à partir de l'API GitHub (release `latest`), de `docs/PLAN.md` sur `main`, du tap
+`fs0ciety7000/homebrew-portico` et de l'AUR. Le build ne fait aucune requête réseau.
+
+- L'action `.github/workflows/sync-upstream.yml` tourne toutes les 30 minutes (et à la main, *Run workflow*) ; si
+  l'instantané change, elle le commite sur `main` et Coolify redéploie.
+- En local : `NODE_USE_ENV_PROXY=1 node scripts/sync-upstream.mjs` (affiche `changed` ou `unchanged`).
+- Les textes des phases sont traduits dans `src/i18n/content.ts` (`roadmap.copy`) ; une phase nouvelle sans texte
+  s'affiche avec son titre et sa première puce de `PLAN.md` (en français), le temps d'ajouter sa traduction.
+
 ## Déploiement
 
 Coolify (`coolify.fs0ciety.org`), build pack Dockerfile, port 80, healthcheck `/healthz`.

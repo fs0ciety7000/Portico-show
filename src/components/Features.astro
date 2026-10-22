@@ -1,16 +1,28 @@
 ---
-import type { Dict } from '../i18n/content.ts';
+import type { Dict, Status } from '../i18n/content.ts';
+import { channels, fill, phaseStatus, upstream } from '../lib/upstream.ts';
 interface Props {
   t: Dict;
 }
 const { t } = Astro.props;
 const f = t.features;
+// Statuses follow the repository: the MVP matrix and the phases of docs/PLAN.md, and the published packages.
+const mvp = f.items.map((it, i) => ({ ...it, g: 'mvp' as const, s: (upstream.mvp[i]?.status ?? 'done') as Status }));
+const after = f.after.map((it) => {
+  const s: Status = it.dist ? (channels[it.dist] ? 'done' : 'wip') : ((phaseStatus(it.phase ?? '') ?? 'next') as Status);
+  return { t: it.t, d: it.d, g: 'after' as const, s };
+});
+const items = [...mvp, ...after];
 const counts = {
-  done: f.items.filter((i) => i.s === 'done').length,
-  wip: f.items.filter((i) => i.s === 'wip').length,
-  next: f.items.filter((i) => i.s === 'next').length,
+  done: items.filter((i) => i.s === 'done').length,
+  wip: items.filter((i) => i.s === 'wip').length,
+  next: items.filter((i) => i.s === 'next').length,
 };
-const mvpCount = f.items.filter((i) => i.g === 'mvp').length;
+const mvpCount = mvp.length;
+const groups = {
+  mvp: fill(f.groups.mvp, { done: mvp.filter((i) => i.s === 'done').length, total: mvp.length }),
+  after: f.groups.after,
+};
 ---
 
 <section id="fonctionnalites" class="section" aria-labelledby="features-title">
@@ -39,9 +51,9 @@ const mvpCount = f.items.filter((i) => i.g === 'mvp').length;
       {
         (['mvp', 'after'] as const).map((g) => (
           <div class="group">
-            <h3 class="meta group-title">{f.groups[g]}</h3>
+            <h3 class="meta group-title">{groups[g]}</h3>
             <ol class="list" role="list" start={g === 'mvp' ? 1 : mvpCount + 1}>
-              {f.items
+              {items
                 .map((it, i) => ({ it, i }))
                 .filter(({ it }) => it.g === g)
                 .map(({ it, i }) => (

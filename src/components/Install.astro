@@ -1,11 +1,18 @@
 ---
 import type { Dict } from '../i18n/content.ts';
-import { DOWNLOAD_URL, RELEASE_URL } from '../i18n/content.ts';
+import { fill, platforms, release, releaseDate, releaseUrl, sumsUrl, version } from '../lib/upstream.ts';
 interface Props {
   t: Dict;
 }
 const { t } = Astro.props;
 const i = t.install;
+const lang = t.lang as 'fr' | 'en';
+const list = platforms(t);
+const verifyCmd = `curl -LO ${sumsUrl} && sha256sum -c SHA256SUMS --ignore-missing`;
+const extras = [
+  { k: i.first.k, cmd: i.first.cmd, note: i.first.note },
+  { k: i.verify.k, cmd: verifyCmd, note: i.verify.note },
+];
 ---
 
 <section id="installer" class="section" aria-labelledby="install-title">
@@ -14,15 +21,17 @@ const i = t.install;
       <p class="meta label col-label" data-reveal>{i.label}</p>
       <div class="col-main">
         <h2 id="install-title" class="h2" data-reveal>{i.title}</h2>
-        <p class="lead" data-reveal data-d="1">{i.lead}</p>
+        <p class="lead" data-reveal data-d="1">{fill(i.lead, { v: version })}</p>
         <p class="release mono" data-reveal data-d="2">
-          <span class="ver"><span class="status-dot" data-s="connected" aria-hidden="true"></span>v{i.release.version}</span>
+          <span class="ver"><span class="status-dot" data-s="connected" aria-hidden="true"></span>{release?.tag}</span>
           <span class="sep" aria-hidden="true">·</span>
-          <span>{i.release.date}</span>
+          <span>{releaseDate(lang)}</span>
           <span class="sep" aria-hidden="true">·</span>
-          <a href={RELEASE_URL} rel="noopener">{i.release.notes} <span aria-hidden="true">↗</span></a>
+          <a href={releaseUrl} rel="noopener">{i.release.notes} <span aria-hidden="true">↗</span></a>
           <span class="sep" aria-hidden="true">·</span>
-          <a href={`${DOWNLOAD_URL}/SHA256SUMS`} rel="noopener">{i.release.sums}</a>
+          <a href={sumsUrl} rel="noopener">{i.release.sums}</a>
+        </p>
+        <p class="meta synced" data-reveal data-d="2">{i.release.synced}
         </p>
       </div>
     </div>
@@ -31,7 +40,7 @@ const i = t.install;
       <div class="bar">
         <div class="platforms" role="tablist" aria-label={i.label}>
           {
-            i.platforms.map((p, n) => (
+            list.map((p, n) => (
               <button
                 type="button"
                 role="tab"
@@ -46,11 +55,11 @@ const i = t.install;
             ))
           }
         </div>
-        <a class="all meta" href={RELEASE_URL} rel="noopener">{i.release.all} <span aria-hidden="true">↗</span></a>
+        <a class="all meta" href={releaseUrl} rel="noopener">{i.release.all} <span aria-hidden="true">↗</span></a>
       </div>
 
       {
-        i.platforms.map((p, n) => (
+        list.map((p, n) => (
           <div class="panel" role="tabpanel" id={`os-${p.id}`} aria-labelledby={`os-tab-${p.id}`} hidden={n !== 0} data-os-panel={p.id}>
             {p.methods.map((m, mi) => (
               <article class="method" data-soon={m.s === 'soon' ? '' : undefined}>
@@ -66,7 +75,7 @@ const i = t.install;
                   <ul class="files" role="list">
                     {m.files.map((file) => (
                       <li>
-                        <a class="file" href={`${DOWNLOAD_URL}/${file.name}`} rel="noopener">
+                        <a class="file" href={file.href} rel="noopener">
                           <span class="dl" aria-hidden="true">
                             ↓
                           </span>
@@ -77,6 +86,7 @@ const i = t.install;
                     ))}
                   </ul>
                 )}
+                {m.steps.length > 0 && (
                 <ol class="steps" role="list">
                   {m.steps.map((st) => (
                     <li>
@@ -95,6 +105,7 @@ const i = t.install;
                     </li>
                   ))}
                 </ol>
+                )}
               </article>
             ))}
           </div>
@@ -104,7 +115,7 @@ const i = t.install;
 
     <div class="aside">
       {
-        [i.first, i.verify].map((b) => (
+        extras.map((b) => (
           <div class="card">
             <h3>{b.k}</h3>
             <div class="line">
@@ -212,6 +223,9 @@ const i = t.install;
   }
   .sep {
     color: var(--text-meta);
+  }
+  .synced {
+    margin-top: calc(-1 * var(--space-3));
   }
 
   .console {

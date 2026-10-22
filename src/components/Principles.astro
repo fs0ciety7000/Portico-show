@@ -1,10 +1,15 @@
 ---
 import type { Dict } from '../i18n/content.ts';
+import { fill, upstream } from '../lib/upstream.ts';
 interface Props {
   t: Dict;
 }
 const { t } = Astro.props;
 const m = t.manifesto;
+// Test counts come from the dashboard of docs/PLAN.md, rounded down to the ten.
+const tests = upstream.tests;
+const vars = { tests: Math.floor((tests?.total ?? 0) / 10) * 10, interop: tests?.interop ?? '', e2e: tests?.e2e ?? '' };
+const stats = t.stats.items.map((s) => ({ ...s, value: fill(s.value, vars), label: fill(s.label, vars) }));
 ---
 
 <section id="principes" class="section marble" aria-labelledby="principes-title">
@@ -31,7 +36,7 @@ const m = t.manifesto;
 
     <div class="stats" role="group" aria-label={t.stats.label}>
       {
-        t.stats.items.map((s, i) => (
+        stats.map((s, i) => (
           <div class="stat" data-reveal data-d={i}>
             <p class="value" aria-hidden="true">
               {s.value}

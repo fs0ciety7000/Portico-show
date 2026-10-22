@@ -1,10 +1,14 @@
 ---
 import type { Dict } from '../i18n/content.ts';
+import { later, roadmap, upstream } from '../lib/upstream.ts';
 interface Props {
   t: Dict;
 }
 const { t } = Astro.props;
 const r = t.roadmap;
+const phases = roadmap(t);
+const themes = later(t);
+const planUrl = `https://github.com/${upstream.repo}/blob/main/docs/PLAN.md`;
 const legend = t.features.legend;
 ---
 
@@ -17,7 +21,7 @@ const legend = t.features.legend;
 
     <ol class="phases" role="list">
       {
-        r.phases.map((p, i) => (
+        phases.map((p, i) => (
           <li class="phase" data-s={p.s} data-reveal data-d={i}>
             <div class="rail" aria-hidden="true">
               <span class="node" />
@@ -38,9 +42,27 @@ const legend = t.features.legend;
 
     <div class="later">
       <h3 class="meta">{r.later}</h3>
-      <ul role="list">
-        {r.laterItems.map((x) => <li>{x}</li>)}
+      <ul class="themes" role="list">
+        {
+          themes.map((th) => (
+            <li>
+              <span class="theme">{th.theme}</span>
+              {th.items.length > 0 && <span class="items">{th.items.join(' · ')}</span>}
+            </li>
+          ))
+        }
       </ul>
+      {
+        upstream.evaluate.length > 0 && (
+          <p class="evaluate">
+            <span class="meta">{r.evaluate}</span>
+            {upstream.evaluate.map((x) => (
+              <span class="chip">{x}</span>
+            ))}
+          </p>
+        )
+      }
+      <a class="synced meta" href={planUrl} rel="noopener">{r.synced} <span aria-hidden="true">↗</span></a>
     </div>
   </div>
 </section>
@@ -135,29 +157,56 @@ const legend = t.features.legend;
     text-wrap: pretty;
   }
   .later {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    display: grid;
     gap: var(--space-4);
     margin-top: clamp(48px, 6vw, 80px);
     padding-top: var(--space-5);
     border-top: 1px solid var(--line);
   }
-  .later ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
+  .themes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-3);
     margin: 0;
     padding: 0;
     list-style: none;
   }
-  .later li {
-    padding: 4px 10px;
+  .themes li {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-md);
+  }
+  .theme {
+    font-weight: 600;
+    font-size: var(--fs-ui);
+  }
+  .items {
+    font-size: var(--fs-ui-sm);
+    color: var(--text-secondary);
+    text-wrap: pretty;
+  }
+  .evaluate {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+  .chip {
+    padding: 2px 10px;
     border: 1px dashed var(--border-strong);
     border-radius: var(--radius-pill);
     font-family: var(--font-mono);
     font-size: var(--text-sm);
     color: var(--text-secondary);
+  }
+  .synced {
+    justify-self: start;
+    transition: color var(--motion-fast) var(--ease-standard);
+  }
+  .synced:hover {
+    color: var(--text-primary);
   }
   @media (max-width: 1000px) {
     .col-label,

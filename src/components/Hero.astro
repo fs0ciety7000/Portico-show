@@ -1,6 +1,7 @@
 ---
 import type { Dict } from '../i18n/content.ts';
 import { REPO } from '../i18n/content.ts';
+import { fill, releaseDate, version } from '../lib/upstream.ts';
 
 interface Props {
   t: Dict;
@@ -26,8 +27,8 @@ const h = t.hero;
     <div class="copy">
       <a class="release" href="#installer" data-reveal>
         <span class="status-dot" data-s="connected" aria-hidden="true"></span>
-        <span class="rel-v mono">{h.release}</span>
-        <span class="rel-h">{h.releaseHint}</span>
+        <span class="rel-v mono">{fill(h.release, { v: version })}</span>
+        <span class="rel-h">{fill(h.releaseHint, { date: releaseDate(t.lang as 'fr' | 'en') })}</span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
       <p class="meta label" data-reveal>{h.eyebrow}</p>
