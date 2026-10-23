@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-10-22T23:04:30.412Z",
+  "syncedAt": "2026-10-23T06:12:30.361Z",
   "repo": "fs0ciety7000/Portico",
   "release": {
     "version": "0.2.1",
@@ -129,6 +129,12 @@
       "title": "Windows",
       "status": "next",
       "summary": "Gestionnaire d'identifiants Windows (keyring), agent OpenSSH sur named pipe, WebView2, chemins %USERPROFILE%\\.ssh"
+    },
+    {
+      "id": "9",
+      "title": "confort du terminal",
+      "status": "done",
+      "summary": "Recherche dans l'historique, TUI (Ctrl-Space /) et GUI (⌘F / Ctrl-Alt-F) : texte littéral, casse intelligente,"
     }
   ],
   "mvp": [
@@ -204,9 +210,9 @@
     }
   ],
   "tests": {
-    "total": 672,
+    "total": 825,
     "interop": 13,
-    "e2e": "19/19"
+    "e2e": "22/22"
   },
   "later": [
     {
