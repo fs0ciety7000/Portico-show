@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-10-23T06:12:30.361Z",
+  "syncedAt": "2026-10-24T21:01:46.492Z",
   "repo": "fs0ciety7000/Portico",
   "release": {
     "version": "0.2.1",
@@ -135,6 +135,12 @@
       "title": "confort du terminal",
       "status": "done",
       "summary": "Recherche dans l'historique, TUI (Ctrl-Space /) et GUI (⌘F / Ctrl-Alt-F) : texte littéral, casse intelligente,"
+    },
+    {
+      "id": "10",
+      "title": "thème clair",
+      "status": "done",
+      "summary": "Marble : surfaces marbre chaud (jamais blanc pur), texte graphite, un seul accent bronze, élévation inversée"
     }
   ],
   "mvp": [
@@ -210,7 +216,7 @@
     }
   ],
   "tests": {
-    "total": 825,
+    "total": 849,
     "interop": 13,
     "e2e": "22/22"
   },
@@ -249,7 +255,7 @@
     {
       "theme": "Plateformes",
       "items": [
-        "Thème clair"
+        "Thèmes clairs supplémentaires si demandés"
       ]
     },
     {
