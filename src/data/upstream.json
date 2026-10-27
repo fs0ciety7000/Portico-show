@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-10-24T21:01:46.492Z",
+  "syncedAt": "2026-10-27T16:08:34.449Z",
   "repo": "fs0ciety7000/Portico",
   "release": {
     "version": "0.2.1",
@@ -127,8 +127,8 @@
     {
       "id": "8",
       "title": "Windows",
-      "status": "next",
-      "summary": "Gestionnaire d'identifiants Windows (keyring), agent OpenSSH sur named pipe, WebView2, chemins %USERPROFILE%\\.ssh"
+      "status": "done",
+      "summary": "Gestionnaire d'identifiants Windows (keyring, persistance Local, jamais itinérante), agent OpenSSH sur named pipe"
     },
     {
       "id": "9",
