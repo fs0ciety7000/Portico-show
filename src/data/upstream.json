@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-10-27T19:46:40.865Z",
+  "syncedAt": "2026-10-27T20:05:11.476Z",
   "repo": "fs0ciety7000/Portico",
   "release": {
     "version": "0.6.0",
@@ -80,7 +80,10 @@
       "bucket": "fs0ciety7000/scoop-portico",
       "version": null
     },
-    "winget": null
+    "winget": {
+      "gui": null,
+      "tui": null
+    }
   },
   "phases": [
     {
