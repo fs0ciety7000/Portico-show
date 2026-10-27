@@ -1,6 +1,6 @@
 # Keeps the site in step with the Portico repository: latest release, install
 # commands, phase statuses, tests and roadmap (scripts/sync-upstream.mjs), and
-# the Arch Linux PKGBUILDs of that release (scripts/render-arch.sh).
+# the Arch Linux and Scoop packages of that release (scripts/render-packages.sh).
 # When the snapshot changes it is committed to main, and Coolify redeploys the
 # site on that push. Nothing else is touched.
 name: Sync with Portico
@@ -9,7 +9,8 @@ on:
   schedule:
     - cron: "*/30 * * * *"
   workflow_dispatch:
-  # Lets the Portico release workflow ask for an immediate sync (optional).
+  # Sent by the `site` job of Portico's release workflow as soon as a release
+  # is published (SITE_DISPATCH_TOKEN), so the site does not wait for the schedule.
   repository_dispatch:
     types: [portico-release]
 
@@ -34,9 +35,12 @@ jobs:
       - name: Read the Portico repository
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: node scripts/sync-upstream.mjs
-      - name: Render the Arch Linux PKGBUILDs
-        run: bash scripts/render-arch.sh
+          TRIGGER: ${{ github.event_name == 'repository_dispatch' && format('release {0}', github.event.client_payload.tag) || github.event_name }}
+        run: |
+          echo "Triggered by: $TRIGGER"
+          node scripts/sync-upstream.mjs
+      - name: Render the Arch Linux and Scoop packages
+        run: bash scripts/render-packages.sh
       - name: Commit the new snapshot
         run: |
           if [ -z "$(git status --porcelain src/data public/arch)" ]; then echo "nothing changed"; exit 0; fi

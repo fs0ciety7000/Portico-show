@@ -33,3 +33,17 @@
 - **Choix** : image multi-étapes `node:24-alpine` → `nginx:alpine`, healthcheck `/healthz`.
 - **Raison** : plus léger qu'un serveur Node ; en-têtes de sécurité et cache immuable des assets fingerprintés.
   La CSP est générée par Astro (`security.csp`) avec les empreintes des scripts inline : pas de `unsafe-inline` pour les scripts ni les styles.
+
+## D-006 · Le site suit le dépôt Portico tout seul
+- **Choix** : un instantané versionné (`src/data/upstream.json`, `packages.json`) écrit par une GitHub Action à
+  chaque release publiée (`repository_dispatch` envoyé par le workflow de release de Portico) et selon un planning ;
+  le build ne fait aucune requête. Les paquets qui ne peuvent pas encore atteindre leur canal (AUR, bucket Scoop)
+  sont rendus par les scripts de Portico et servis par le site (`/arch/`, `/scoop/`).
+- **Alternatives** : rendu serveur (SSR) avec cache, requêtes depuis le navigateur vers l'API GitHub.
+- **Raison** : le site reste statique (nginx, CSP stricte, aucun appel tiers chez le visiteur), chaque changement
+  amont laisse une trace dans l'historique git, et une API GitHub indisponible ne casse jamais le build.
+
+## D-007 · Quatre thèmes et Auto, comme l'app
+- **Choix** : Obsidian (défaut), Basalt, Travertine Night, Marble (clair) et Auto (système), touche `t`.
+  Le site reste sombre par défaut ; Marble passe la scène 3D en mélange normal (la lumière additive disparaît sur
+  fond clair) et la gravure du footer devient un dessin à la mine sur papier.

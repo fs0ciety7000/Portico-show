@@ -56,7 +56,6 @@
   --line: var(--border-subtle);
   /* Muted text that still meets AA (4.5:1) on every surface of the three themes. */
   --text-meta: color-mix(in srgb, var(--text-muted) 30%, var(--text-secondary));
-  color-scheme: dark;
 }
 
 *,

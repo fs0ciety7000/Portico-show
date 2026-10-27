@@ -48,14 +48,18 @@ phases, matrice du MVP, nombre de tests et « Ensuite » viennent de `src/data/u
 `scripts/sync-upstream.mjs` à partir de l'API GitHub (release `latest`), de `docs/PLAN.md` sur `main`, du tap
 `fs0ciety7000/homebrew-portico` et de l'AUR. Le build ne fait aucune requête réseau.
 
-- L'action `.github/workflows/sync-upstream.yml` tourne toutes les 30 minutes (et à la main, *Run workflow*) ; si
-  l'instantané change, elle le commite sur `main` et Coolify redéploie.
+- L'action `.github/workflows/sync-upstream.yml` tourne **dès qu'une release est publiée** (le job `site` du
+  workflow de release de Portico envoie un `repository_dispatch` `portico-release`, jeton `SITE_DISPATCH_TOKEN`),
+  et aussi selon un planning (toutes les 30 min demandées ; GitHub espace en pratique les exécutions de plusieurs
+  heures) et à la main (*Run workflow*). Si l'instantané change, elle le commite sur `main` et Coolify redéploie.
 - En local : `NODE_USE_ENV_PROXY=1 node scripts/sync-upstream.mjs` (affiche `changed` ou `unchanged`).
-- **Arch Linux** : tant que l'AUR est inaccessible (inscriptions fermées), `scripts/render-arch.sh` rend les
-  PKGBUILD `portico-bin` et `portico-gui-bin` avec le `packaging/aur/render.sh` de Portico (au tag de la release,
-  sommes de `SHA256SUMS`) et les publie sous `/arch/` ; le site propose `makepkg -si`. Testé dans un conteneur
-  Arch : les deux paquets se construisent et s'installent (0.2.0-1). Dès que l'AUR porte la version courante,
-  le site affiche aussi `yay -S`.
+- **Paquets servis par le site** (`scripts/render-packages.sh`, avec les scripts `render.sh` de Portico au tag de
+  la release et les sommes de `SHA256SUMS`) :
+  - Arch Linux, tant que l'AUR est inaccessible (inscriptions fermées) : PKGBUILD `portico-bin` et
+    `portico-gui-bin` sous `/arch/`, installés avec `makepkg -si` (testés dans un conteneur Arch, 0.2.0 et 0.2.1) ;
+  - Scoop, tant que le bucket n'est pas publié : `/scoop/portico.json`, installé avec
+    `scoop install https://portico.dessenius.be/scoop/portico.json`.
+  Dès que l'AUR, le bucket ou winget portent la version courante, le site affiche leurs commandes habituelles.
 - Les textes des phases sont traduits dans `src/i18n/content.ts` (`roadmap.copy`) ; une phase nouvelle sans texte
   s'affiche avec son titre et sa première puce de `PLAN.md` (en français), le temps d'ajouter sa traduction.
 

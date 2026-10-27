@@ -1,73 +1,86 @@
 {
-  "syncedAt": "2026-10-27T16:08:34.449Z",
+  "syncedAt": "2026-10-27T19:46:40.865Z",
   "repo": "fs0ciety7000/Portico",
   "release": {
-    "version": "0.2.1",
-    "tag": "v0.2.1",
-    "name": "Portico 0.2.1",
-    "date": "2026-10-22T23:01:17Z",
-    "url": "https://github.com/fs0ciety7000/Portico/releases/tag/v0.2.1",
+    "version": "0.6.0",
+    "tag": "v0.6.0",
+    "name": "Portico 0.6.0",
+    "date": "2026-10-27T18:25:35Z",
+    "url": "https://github.com/fs0ciety7000/Portico/releases/tag/v0.6.0",
     "assets": [
       {
-        "name": "portico-0.2.1-aarch64-apple-darwin.tar.gz",
-        "size": 4804638
+        "name": "portico-0.6.0-aarch64-apple-darwin.tar.gz",
+        "size": 7630227
       },
       {
-        "name": "portico-0.2.1-aarch64-unknown-linux-gnu.tar.gz",
-        "size": 5672100
+        "name": "portico-0.6.0-aarch64-unknown-linux-gnu.tar.gz",
+        "size": 8818022
       },
       {
-        "name": "portico-0.2.1-aarch64-unknown-linux-musl.tar.gz",
-        "size": 5693353
+        "name": "portico-0.6.0-aarch64-unknown-linux-musl.tar.gz",
+        "size": 8806823
       },
       {
-        "name": "portico-0.2.1-x86_64-apple-darwin.tar.gz",
-        "size": 5292874
+        "name": "portico-0.6.0-x86_64-apple-darwin.tar.gz",
+        "size": 8295840
       },
       {
-        "name": "portico-0.2.1-x86_64-unknown-linux-gnu.tar.gz",
-        "size": 6101487
+        "name": "portico-0.6.0-x86_64-pc-windows-msvc.zip",
+        "size": 8839543
       },
       {
-        "name": "portico-0.2.1-x86_64-unknown-linux-musl.tar.gz",
-        "size": 6222491
+        "name": "portico-0.6.0-x86_64-unknown-linux-gnu.tar.gz",
+        "size": 9465281
       },
       {
-        "name": "Portico_0.2.1_aarch64.AppImage",
-        "size": 83896840
+        "name": "portico-0.6.0-x86_64-unknown-linux-musl.tar.gz",
+        "size": 9598980
       },
       {
-        "name": "Portico_0.2.1_amd64.AppImage",
-        "size": 86174200
+        "name": "Portico_0.6.0_aarch64.AppImage",
+        "size": 86694408
       },
       {
-        "name": "Portico_0.2.1_amd64.deb",
-        "size": 8307178
+        "name": "Portico_0.6.0_amd64.AppImage",
+        "size": 89160184
       },
       {
-        "name": "Portico_0.2.1_arm64.deb",
-        "size": 7935046
+        "name": "Portico_0.6.0_amd64.deb",
+        "size": 11706162
       },
       {
-        "name": "Portico_0.2.1_universal-unsigned.dmg",
-        "size": 14294045
+        "name": "Portico_0.6.0_arm64.deb",
+        "size": 11142178
+      },
+      {
+        "name": "Portico_0.6.0_universal-unsigned.dmg",
+        "size": 20085433
+      },
+      {
+        "name": "Portico_0.6.0_x64-setup.exe",
+        "size": 9940629
       },
       {
         "name": "SHA256SUMS",
-        "size": 1219
+        "size": 1420
       }
     ]
   },
   "distribution": {
     "homebrew": {
       "tap": "fs0ciety7000/portico",
-      "formula": "0.2.1",
-      "cask": "0.2.1"
+      "formula": "0.6.0",
+      "cask": "0.6.0"
     },
     "aur": {
       "portico-bin": null,
       "portico-gui-bin": null
-    }
+    },
+    "scoop": {
+      "bucket": "fs0ciety7000/scoop-portico",
+      "version": null
+    },
+    "winget": null
   },
   "phases": [
     {
@@ -119,12 +132,6 @@
       "summary": "Créer, modifier, dupliquer et supprimer des hôtes depuis la TUI et la GUI : alias, HostName, User, Port,"
     },
     {
-      "id": "7",
-      "title": "synchronisation locale optionnelle",
-      "status": "drop",
-      "summary": "Sync de hosts.toml, des snippets et des réglages via un dossier choisi (Syncthing, git…) : jamais de cloud imposé,"
-    },
-    {
       "id": "8",
       "title": "Windows",
       "status": "done",
@@ -141,6 +148,12 @@
       "title": "thème clair",
       "status": "done",
       "summary": "Marble : surfaces marbre chaud (jamais blanc pur), texte graphite, un seul accent bronze, élévation inversée"
+    },
+    {
+      "id": "11",
+      "title": "synchronisation chiffrée par dossier",
+      "status": "wip",
+      "summary": "S0, repérage : comportements réels des fournisseurs (renommages, copies en conflit, fichiers temporaires, placeholders)"
     }
   ],
   "mvp": [
@@ -216,7 +229,7 @@
     }
   ],
   "tests": {
-    "total": 849,
+    "total": 875,
     "interop": 13,
     "e2e": "22/22"
   },

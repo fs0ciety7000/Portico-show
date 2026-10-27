@@ -67,7 +67,7 @@ const home = t.lang === 'fr' ? '/' : '/en/';
 <script>
   import { cycleTheme, currentTheme, isTyping } from '../scripts/theme.ts';
 
-  const NAMES = { obsidian: 'Obsidian', basalt: 'Basalt', travertine: 'Travertine' } as const;
+  const NAMES = { obsidian: 'Obsidian', basalt: 'Basalt', travertine: 'Travertine', marble: 'Marble', auto: 'Auto' } as const;
   const nameEl = document.querySelector<HTMLElement>('[data-theme-name]');
   const paint = () => {
     if (nameEl) nameEl.textContent = NAMES[currentTheme()];

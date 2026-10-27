@@ -17,6 +17,7 @@ import { fileURLToPath } from 'node:url';
 const REPO = 'fs0ciety7000/Portico';
 const TAP = 'fs0ciety7000/homebrew-portico';
 const AUR = ['portico-bin', 'portico-gui-bin'];
+const SCOOP = 'fs0ciety7000/scoop-portico';
 const OUT = fileURLToPath(new URL('../src/data/upstream.json', import.meta.url));
 
 const headers = { 'User-Agent': 'portico-show-sync', Accept: 'application/vnd.github+json' };
@@ -54,6 +55,21 @@ async function homebrew() {
     return v?.[1] ?? cv?.[1] ?? null;
   };
   return { tap: TAP.replace('/homebrew-', '/'), formula: await pick('Formula/portico.rb'), cask: await pick('Casks/portico.rb') };
+}
+
+// Scoop bucket (TUI) and winget (GUI and TUI): published when they carry a version.
+async function scoop() {
+  const f = await get(`https://raw.githubusercontent.com/${SCOOP}/HEAD/bucket/portico.json`).catch(() => null);
+  return { bucket: SCOOP, version: f?.version ?? null };
+}
+
+async function winget() {
+  const versions = async (id) => {
+    const list = await get(`https://api.github.com/repos/microsoft/winget-pkgs/contents/manifests/${id[0].toLowerCase()}/${id.replace('.', '/')}`);
+    return Array.isArray(list) ? list.map((e) => e.name).filter((n) => /^\d+\.\d+\.\d+$/.test(n)) : [];
+  };
+  const latest = (vs) => vs.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).pop() ?? null;
+  return { gui: latest(await versions('fs0ciety7000.Portico')), tui: latest(await versions('fs0ciety7000.PorticoTUI')) };
 }
 
 async function aur() {
@@ -141,17 +157,25 @@ function plan(md) {
     status: tui.includes('✅') && gui.includes('✅') ? 'done' : tui.includes('✅') || gui.includes('✅') ? 'wip' : 'next',
   }));
 
-  // Tests: the last finished row of the dashboard ("611 + 61 GUI + interop (13 scénarios) + E2E bureau 19/19").
-  const board = table(md, '## Tableau de bord').filter((r) => (r[1] ?? '').includes('✅') && /\d/.test(r[2] ?? ''));
-  const last = board[board.length - 1]?.[2] ?? '';
-  const nums = [...last.matchAll(/(\d+)(?:\s*\+\s*(\d+)\s*GUI)?/g)];
-  const core = Number(nums[0]?.[1] ?? 0);
-  const gui = Number(/(\d+)\s*GUI/.exec(last)?.[1] ?? 0);
+  // Tests: the finished rows of the dashboard ("780 + 95 GUI + interop (13 scénarios) + E2E bureau 22/22"),
+  // the largest suite wins (phases are not always closed in numeric order).
+  const board = table(md, '## Tableau de bord').filter((r) => (r[1] ?? '').trim().startsWith('✅') && /\d/.test(r[2] ?? ''));
+  const cell = (r) => r[2] ?? '';
+  const total = (c) => Number(/^\s*(\d+)/.exec(c)?.[1] ?? 0) + Number(/(\d+)\s*GUI/.exec(c)?.[1] ?? 0);
+  const best = board.map(cell).sort((a, b) => total(b) - total(a))[0] ?? '';
+  const lastOf = (re) => board.map(cell).map((c) => re.exec(c)?.[1]).filter(Boolean).pop() ?? null;
   const tests = {
-    total: core + gui,
-    interop: Number(/interop[^(]*\((\d+)\s*sc/.exec(last)?.[1] ?? 0) || null,
-    e2e: /E2E[^0-9]*(\d+\/\d+)/.exec(last)?.[1] ?? null,
+    total: total(best),
+    interop: Number(lastOf(/interop[^(]*\((\d+)\s*sc/)) || null,
+    e2e: lastOf(/E2E[^0-9]*(\d+\/\d+)/),
   };
+
+  // A phase still open in its heading but with a part shipped ("⏳ S1 livrée en 0.6.0") is in progress.
+  for (const row of table(md, '## Tableau de bord')) {
+    const id = /^(\d+[a-z]?)\b/.exec(row[0] ?? '')?.[1];
+    const phase = phases.find((p) => p.id === id);
+    if (phase && phase.status === 'next' && /livr|shipped/i.test(row[1] ?? '')) phase.status = 'wip';
+  }
 
   const later = table(md, '## Roadmap au-delà').map(([theme, content]) => ({ theme: clean(theme), items: splitItems(content ?? '') }));
   const evaluate = table(md, '### À évaluer séparément').map(([subject]) => clean(subject));
@@ -174,6 +198,8 @@ const settle = async (name, fn) => {
 const rel = await settle('release', release);
 const brew = await settle('homebrew', homebrew);
 const arch = await settle('aur', aur);
+const scp = await settle('scoop', scoop);
+const wg = await settle('winget', winget);
 const md = await settle('plan', () => get(`https://raw.githubusercontent.com/${REPO}/HEAD/docs/PLAN.md`, false));
 const parsed = md ? plan(md) : undefined;
 
@@ -183,6 +209,8 @@ const next = {
   distribution: {
     homebrew: brew ?? previous.distribution?.homebrew ?? null,
     aur: arch ?? previous.distribution?.aur ?? null,
+    scoop: scp ?? previous.distribution?.scoop ?? null,
+    winget: wg ?? previous.distribution?.winget ?? null,
   },
   phases: parsed?.phases ?? previous.phases ?? [],
   mvp: parsed?.mvp ?? previous.mvp ?? [],

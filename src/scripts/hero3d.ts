@@ -62,7 +62,7 @@ const GLOW_VERT = /* glsl */ `
 varying vec2 vUv;
 void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
 const GLOW_FRAG = /* glsl */ `
-uniform vec3 uColor; uniform float uIntensity; uniform float uTime;
+uniform vec3 uColor; uniform float uIntensity; uniform float uTime; uniform float uLight;
 varying vec2 vUv;
 void main() {
   vec2 p = vUv - vec2(0.5, 0.42);
@@ -71,7 +71,8 @@ void main() {
   float core = smoothstep(0.42, 0.0, d);
   float breath = 0.92 + 0.08 * sin(uTime * 0.9);
   float a = pow(core, 2.2) * uIntensity * breath;
-  gl_FragColor = vec4(uColor * a, a);
+  // Additive light on a dark ground; a soft wash of the accent on a light one (Marble).
+  gl_FragColor = uLight > 0.5 ? vec4(uColor, min(a * 0.55, 0.8)) : vec4(uColor * a, a);
 }`;
 
 export interface HeroHandle {
@@ -155,7 +156,7 @@ export function mountHero3D(stage: HTMLElement, onReady: () => void): HeroHandle
   const glowMat = new THREE.ShaderMaterial({
     vertexShader: GLOW_VERT,
     fragmentShader: GLOW_FRAG,
-    uniforms: { uColor: { value: new THREE.Color() }, uIntensity: { value: 0 }, uTime: { value: 0 } },
+    uniforms: { uColor: { value: new THREE.Color() }, uIntensity: { value: 0 }, uTime: { value: 0 }, uLight: { value: 0 } },
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
@@ -222,15 +223,23 @@ export function mountHero3D(stage: HTMLElement, onReady: () => void): HeroHandle
     const bg = col('--bg-base', '#0b0c0e');
     const elevated = col('--bg-elevated', '#171a1e');
     const secondary = col('--text-secondary', '#a8a59d');
+    // Marble (light): normal blending, since additive light vanishes on a light ground.
+    const isLight = bg.getHSL({ h: 0, s: 0, l: 0 }).l > 0.5;
+    const blending = isLight ? THREE.NormalBlending : THREE.AdditiveBlending;
+    for (const m of [glowMat, pMat, ...rings.map((r) => r.material as THREE.Material)]) {
+      m.blending = blending;
+      m.needsUpdate = true;
+    }
+    glowMat.uniforms['uLight']!.value = isLight ? 1 : 0;
     fog.color.copy(bg);
-    stone.color.copy(elevated).lerp(secondary, 0.24);
+    stone.color.copy(elevated).lerp(secondary, isLight ? 0.1 : 0.24);
     brass.color.copy(accent);
     glowMat.uniforms['uColor']!.value = accent.clone();
     doorLight.color.copy(accent);
     rim.color.copy(accent).lerp(new THREE.Color(0xffffff), 0.4);
-    key.color.copy(secondary);
+    key.color.copy(isLight ? new THREE.Color(0xffffff) : secondary);
     rings.forEach((r) => ((r.material as THREE.MeshBasicMaterial).color = accent.clone()));
-    pMat.color.copy(accent).lerp(new THREE.Color(0xffffff), 0.35);
+    pMat.color.copy(accent).lerp(new THREE.Color(isLight ? 0x000000 : 0xffffff), isLight ? 0.1 : 0.35);
     (grid.material as THREE.LineBasicMaterial).color = secondary.clone();
   };
   applyTheme();

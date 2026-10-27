@@ -1,11 +1,12 @@
 /**
  * The state of the Portico repository, as last synced by scripts/sync-upstream.mjs
- * (GitHub Action every 30 min, see .github/workflows/sync-upstream.yml).
+ * (GitHub Action: on every published release, and on a schedule; see
+ * .github/workflows/sync-upstream.yml).
  * Everything that follows Portico's releases and plan is derived here, at build
  * time: no request leaves the visitor's browser.
  */
 import data from '../data/upstream.json';
-import arch from '../data/arch.json';
+import packages from '../data/packages.json';
 import type { Dict, InstallMethod, Platform, Status } from '../i18n/content.ts';
 
 export type PhaseStatus = 'done' | 'wip' | 'next' | 'drop';
@@ -17,6 +18,8 @@ export interface Upstream {
   distribution: {
     homebrew: { tap: string; formula: string | null; cask: string | null } | null;
     aur: Record<string, string | null> | null;
+    scoop?: { bucket: string; version: string | null } | null;
+    winget?: { gui: string | null; tui: string | null } | null;
   };
   phases: { id: string; title: string; status: PhaseStatus; summary: string }[];
   mvp: { n: number; name: string; status: Status }[];
@@ -58,8 +61,12 @@ export const channels = {
   homebrew: !!release && upstream.distribution.homebrew?.formula === version,
   homebrewCask: !!release && upstream.distribution.homebrew?.cask === version,
   aur: !!release && Object.values(upstream.distribution.aur ?? {}).some((v) => v?.startsWith(`${version}-`) ?? false),
-  /** PKGBUILDs rendered by scripts/render-arch.sh and served under /arch/ (while the AUR is out of reach). */
-  arch: !!release && arch.version === version,
+  scoop: !!release && upstream.distribution.scoop?.version === version,
+  winget: !!release && upstream.distribution.winget?.gui === version,
+  /** PKGBUILDs rendered by scripts/render-packages.sh and served under /arch/ (while the AUR is out of reach). */
+  arch: !!release && packages.version === version && packages.arch.length > 0,
+  /** Scoop manifest served under /scoop/ (until the bucket is published). */
+  scoopUrl: !!release && packages.version === version && packages.scoop,
 };
 
 const SITE = (import.meta.env.SITE as string | undefined)?.replace(/\/$/, '') ?? 'https://portico.dessenius.be';
@@ -132,7 +139,7 @@ export function platforms(t: Dict): Platform[] {
       k: i.names.arch,
       s: 'ok',
       note: channels.aur ? i.notes.archAlt : i.notes.arch,
-      files: arch.packages.map((pkg) => ({ name: `${pkg}/PKGBUILD`, size: `v${arch.version}`, href: `/arch/${pkg}/PKGBUILD` })),
+      files: packages.arch.map((pkg) => ({ name: `${pkg}/PKGBUILD`, size: `v${packages.version}`, href: `/arch/${pkg}/PKGBUILD` })),
       steps: steps([
         ['TUI', pkgbuild('portico-bin')],
         ['GUI', pkgbuild('portico-gui-bin')],
@@ -154,6 +161,59 @@ export function platforms(t: Dict): Platform[] {
   ]);
   if (linTui.length) linux.push({ k: i.names.tui, s: 'ok', note: i.notes.tuiLinux, steps: linTui });
 
+  const windows: InstallMethod[] = [];
+  const setup = asset(/_x64-setup\.exe$/);
+  const zip = asset(/-x86_64-pc-windows-msvc\.zip$/);
+  if (setup || zip) {
+    windows.push({
+      k: 'winget',
+      s: channels.winget ? 'ok' : 'soon',
+      note: channels.winget ? i.notes.winget : i.notes.wingetSoon,
+      steps: steps([
+        ['GUI', 'winget install fs0ciety7000.Portico'],
+        ['TUI', 'winget install fs0ciety7000.PorticoTUI'],
+      ]),
+    });
+  }
+  if (setup) {
+    windows.push({
+      k: i.names.setup,
+      s: 'ok',
+      note: i.notes.setup,
+      files: [{ name: setup.name, size: size(setup.size, lang), href: url(setup.name) }],
+      steps: [],
+    });
+  }
+  if (channels.scoop) {
+    const bucket = upstream.distribution.scoop?.bucket ?? 'fs0ciety7000/scoop-portico';
+    windows.push({
+      k: 'Scoop',
+      s: 'ok',
+      note: i.notes.scoop,
+      steps: steps([
+        [i.labels.bucket, `scoop bucket add portico https://github.com/${bucket}`],
+        ['TUI', 'scoop install portico/portico'],
+      ]),
+    });
+  } else if (channels.scoopUrl) {
+    windows.push({
+      k: 'Scoop',
+      s: 'ok',
+      note: i.notes.scoopUrl,
+      files: [{ name: 'scoop/portico.json', size: `v${packages.version}`, href: '/scoop/portico.json' }],
+      steps: steps([['TUI', `scoop install ${SITE}/scoop/portico.json`]]),
+    });
+  }
+  if (zip) {
+    const dir = zip.name.replace(/\.zip$/, '');
+    windows.push({
+      k: i.names.tui,
+      s: 'ok',
+      note: i.notes.tuiWindows,
+      steps: steps([['PowerShell', `curl.exe -LO ${url(zip.name)}; tar -xf ${zip.name}; .\\${dir}\\portico.exe --version`]]),
+    });
+  }
+
   const source: InstallMethod[] = [
     {
       k: i.names.source,
@@ -169,6 +229,7 @@ export function platforms(t: Dict): Platform[] {
 
   return [
     { id: 'macos', name: 'macOS', methods: mac },
+    ...(windows.length ? [{ id: 'windows', name: 'Windows', methods: windows }] : []),
     { id: 'linux', name: 'Linux', methods: linux },
     { id: 'source', name: i.names.sourceTab, methods: source },
   ];

@@ -5,7 +5,7 @@
 import { type Run, type State, HOSTS, initialState, promptFor, render, runCommand, visibleHosts, welcome } from '../lib/tui/sim.ts';
 import { cycleTheme, currentTheme } from './theme.ts';
 
-const THEME_NAMES: Record<string, string> = { obsidian: 'Obsidian', basalt: 'Basalt', travertine: 'Travertine Night' };
+const THEME_NAMES: Record<string, string> = { obsidian: 'Obsidian', basalt: 'Basalt', travertine: 'Travertine Night', marble: 'Marble', auto: 'Auto' };
 
 export function runsToHtml(lines: Run[][]): string {
   const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

@@ -183,7 +183,13 @@ const extras = [
     });
   });
   const ua = navigator.userAgent;
-  const guess = /Mac OS X|Macintosh/.test(ua) && !/iPhone|iPad/.test(ua) ? 'macos' : /Linux|X11/.test(ua) && !/Android/.test(ua) ? 'linux' : null;
+  const guess = /Windows NT/.test(ua)
+    ? 'windows'
+    : /Mac OS X|Macintosh/.test(ua) && !/iPhone|iPad/.test(ua)
+      ? 'macos'
+      : /Linux|X11/.test(ua) && !/Android/.test(ua)
+        ? 'linux'
+        : null;
   const pre = tabs.find((x) => x.dataset['os'] === guess);
   if (pre) select(pre);
 </script>

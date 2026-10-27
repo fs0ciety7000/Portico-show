@@ -1,14 +1,39 @@
-/** Theme switching: the three Portico themes, same `t` key as the app. */
-export const THEMES = ['obsidian', 'basalt', 'travertine'] as const;
+/**
+ * Theme switching, as in the app: the `t` key cycles Obsidian → Basalt →
+ * Travertine Night → Marble → Auto. Auto follows the system appearance
+ * (Marble when light, Obsidian when dark). `data-theme` always holds the theme
+ * actually shown; `data-theme-choice` holds what the visitor picked.
+ */
+export const THEMES = ['obsidian', 'basalt', 'travertine', 'marble', 'auto'] as const;
 export type Theme = (typeof THEMES)[number];
+export type ShownTheme = Exclude<Theme, 'auto'>;
 
+const light = () => window.matchMedia('(prefers-color-scheme: light)').matches;
+
+function resolve(choice: Theme): ShownTheme {
+  return choice === 'auto' ? (light() ? 'marble' : 'obsidian') : choice;
+}
+
+/** What the visitor picked (Auto included). */
 export function currentTheme(): Theme {
-  const th = document.documentElement.dataset['theme'];
-  return (THEMES as readonly string[]).includes(th ?? '') ? (th as Theme) : 'obsidian';
+  const root = document.documentElement;
+  const choice = root.dataset['themeChoice'] ?? root.dataset['theme'] ?? '';
+  return (THEMES as readonly string[]).includes(choice) ? (choice as Theme) : 'obsidian';
+}
+
+/** The theme on screen. */
+export function shownTheme(): ShownTheme {
+  return resolve(currentTheme());
+}
+
+function apply(choice: Theme): void {
+  const root = document.documentElement;
+  root.dataset['themeChoice'] = choice;
+  root.dataset['theme'] = resolve(choice);
 }
 
 export function setTheme(theme: Theme): void {
-  document.documentElement.dataset['theme'] = theme;
+  apply(theme);
   try {
     localStorage.setItem('portico-theme', theme);
   } catch {
@@ -22,6 +47,15 @@ export function cycleTheme(): Theme {
   const next = THEMES[(i + 1) % THEMES.length] ?? 'obsidian';
   setTheme(next);
   return next;
+}
+
+// Auto follows the system live.
+if (typeof window !== 'undefined') {
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
+    if (currentTheme() !== 'auto') return;
+    apply('auto');
+    window.dispatchEvent(new CustomEvent('portico:theme', { detail: 'auto' }));
+  });
 }
 
 /** True when a key press belongs to a text field or an interactive widget that owns the keyboard. */

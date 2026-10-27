@@ -7,9 +7,16 @@ interface Props {
 const { t } = Astro.props;
 const f = t.features;
 // Statuses follow the repository: the MVP matrix and the phases of docs/PLAN.md, and the published packages.
+const shipped = {
+  homebrew: channels.homebrew,
+  aur: channels.aur,
+  arch: channels.aur || channels.arch,
+  scoop: channels.scoop || channels.scoopUrl,
+  winget: channels.winget,
+};
 const mvp = f.items.map((it, i) => ({ ...it, g: 'mvp' as const, s: (upstream.mvp[i]?.status ?? 'done') as Status }));
 const after = f.after.map((it) => {
-  const s: Status = it.dist ? (channels[it.dist] ? 'done' : 'wip') : ((phaseStatus(it.phase ?? '') ?? 'next') as Status);
+  const s: Status = it.dist ? (shipped[it.dist] ? 'done' : 'wip') : ((phaseStatus(it.phase ?? '') ?? 'next') as Status);
   return { t: it.t, d: it.d, g: 'after' as const, s };
 });
 const items = [...mvp, ...after];

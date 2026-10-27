@@ -86,7 +86,7 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
             views.map((v, i) =>
               v.themed ? (
                 <div class="shot" data-view={v.id} hidden={i !== 0}>
-                  {(['obsidian', 'basalt', 'travertine'] as const).map((th) => (
+                  {(['obsidian', 'basalt', 'travertine', 'marble'] as const).map((th) => (
                     <img
                       class={`themed th-${th}`}
                       src={src(`${th}-hosts`, 1600)}
@@ -213,12 +213,16 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
 
   // Theme cards.
   const cards = [...document.querySelectorAll<HTMLButtonElement>('[data-set-theme]')];
-  const sync = () =>
+  const sync = () => {
     cards.forEach((c) => {
       const on = c.dataset['setTheme'] === currentTheme();
       c.setAttribute('aria-checked', String(on));
       c.tabIndex = on ? 0 : -1;
     });
+    // Auto checks no card: keep the group reachable from the keyboard.
+    const first = cards[0];
+    if (first && !cards.some((c) => c.tabIndex === 0)) first.tabIndex = 0;
+  };
   cards.forEach((c, i) => {
     c.addEventListener('click', () => setTheme(c.dataset['setTheme'] as Theme));
     c.addEventListener('keydown', (e) => {
@@ -302,7 +306,7 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
     border-color: var(--border-strong);
   }
   [role='tab'][aria-selected='true'] .meta {
-    color: var(--accent);
+    color: var(--accent-strong);
   }
   .panel {
     animation: fade var(--motion-slow) var(--ease-standard);
@@ -464,7 +468,8 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
   }
   :global(html[data-theme='obsidian']) .th-obsidian,
   :global(html[data-theme='basalt']) .th-basalt,
-  :global(html[data-theme='travertine']) .th-travertine {
+  :global(html[data-theme='travertine']) .th-travertine,
+  :global(html[data-theme='marble']) .th-marble {
     display: block;
   }
   .views {
@@ -504,7 +509,7 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
   }
   .theme-list {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--space-3);
   }
   .theme-card {
@@ -567,6 +572,11 @@ const src = (name: string, w: number) => `/shots/gui-${name}-${w}.webp`;
     .col-label,
     .col-main {
       grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 1000px) {
+    .theme-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
   @media (max-width: 720px) {

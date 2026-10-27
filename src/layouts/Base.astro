@@ -33,7 +33,7 @@ const jsonLd = {
       '@id': `${site.origin}/#app`,
       name: 'Portico',
       applicationCategory: 'DeveloperApplication',
-      operatingSystem: 'macOS, Linux',
+      operatingSystem: 'macOS, Linux, Windows',
       description: t.meta.description,
       url: canonical,
       inLanguage: t.lang,
@@ -107,7 +107,10 @@ const ogAlt = t.lang === 'fr' ? 'Portico : le portique du logo en 3D, son arche 
         d.classList.add('js');
         try {
           var th = localStorage.getItem('portico-theme');
-          if (th === 'obsidian' || th === 'basalt' || th === 'travertine') d.dataset.theme = th;
+          if (th === 'obsidian' || th === 'basalt' || th === 'travertine' || th === 'marble' || th === 'auto') {
+            d.dataset.themeChoice = th;
+            d.dataset.theme = th === 'auto' ? (matchMedia('(prefers-color-scheme: light)').matches ? 'marble' : 'obsidian') : th;
+          }
         } catch (e) {}
       })();
     </script>
