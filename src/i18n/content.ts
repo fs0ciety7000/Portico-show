@@ -30,7 +30,6 @@ export interface AfterFeature {
 }
 
 export const REPO = 'https://github.com/fs0ciety7000/Portico';
-export const SITE_REPO = 'https://github.com/fs0ciety7000/Portico-show';
 
 const fr = {
   lang: 'fr',
@@ -320,7 +319,7 @@ const fr = {
     cols: [
       { t: 'Produit', l: [['#interfaces', 'Interfaces'], ['#fonctionnalites', 'Fonctionnalités'], ['#securite', 'Sécurité'], ['#clavier', 'Clavier']] },
       { t: 'Projet', l: [['#feuille-de-route', 'Feuille de route'], ['#installer', 'Installer'], ['#questions', 'Questions']] },
-      { t: 'Code', l: [[REPO, 'Dépôt Portico'], [`${REPO}/blob/main/docs/KEYBINDINGS.md`, 'Raccourcis'], [`${REPO}/blob/main/docs/STACK.md`, 'Choix techniques'], [SITE_REPO, 'Code de ce site']] },
+      { t: 'Code', l: [[REPO, 'Dépôt Portico'], [`${REPO}/blob/main/docs/KEYBINDINGS.md`, 'Raccourcis'], [`${REPO}/blob/main/docs/STACK.md`, 'Choix techniques']] },
     ] as { t: string; l: [string, string][] }[],
     credit: 'Conçu et développé par',
     author: 'Nicolas Dessenius',
@@ -637,7 +636,7 @@ const en: Dict = {
     cols: [
       { t: 'Product', l: [['#interfaces', 'Interfaces'], ['#fonctionnalites', 'Features'], ['#securite', 'Security'], ['#clavier', 'Keyboard']] },
       { t: 'Project', l: [['#feuille-de-route', 'Roadmap'], ['#installer', 'Install'], ['#questions', 'Questions']] },
-      { t: 'Code', l: [[REPO, 'Portico repository'], [`${REPO}/blob/main/docs/KEYBINDINGS.md`, 'Shortcuts'], [`${REPO}/blob/main/docs/STACK.md`, 'Technical choices'], [SITE_REPO, 'This site’s code']] },
+      { t: 'Code', l: [[REPO, 'Portico repository'], [`${REPO}/blob/main/docs/KEYBINDINGS.md`, 'Shortcuts'], [`${REPO}/blob/main/docs/STACK.md`, 'Technical choices']] },
     ],
     credit: 'Designed and built by',
     author: 'Nicolas Dessenius',
