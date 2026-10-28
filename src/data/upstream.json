@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-10-28T12:25:39.884Z",
+  "syncedAt": "2026-10-28T12:31:37.372Z",
   "repo": "fs0ciety7000/Portico",
   "release": {
     "version": "0.7.0",
@@ -69,8 +69,8 @@
   "distribution": {
     "homebrew": {
       "tap": "fs0ciety7000/portico",
-      "formula": "0.6.0",
-      "cask": "0.6.0"
+      "formula": "0.7.0",
+      "cask": "0.7.0"
     },
     "aur": {
       "portico-bin": null,
