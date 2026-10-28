@@ -1,64 +1,64 @@
 {
-  "syncedAt": "2026-10-27T20:05:11.476Z",
+  "syncedAt": "2026-10-28T12:25:39.884Z",
   "repo": "fs0ciety7000/Portico",
   "release": {
-    "version": "0.6.0",
-    "tag": "v0.6.0",
-    "name": "Portico 0.6.0",
-    "date": "2026-10-27T18:25:35Z",
-    "url": "https://github.com/fs0ciety7000/Portico/releases/tag/v0.6.0",
+    "version": "0.7.0",
+    "tag": "v0.7.0",
+    "name": "Portico 0.7.0",
+    "date": "2026-10-28T12:25:18Z",
+    "url": "https://github.com/fs0ciety7000/Portico/releases/tag/v0.7.0",
     "assets": [
       {
-        "name": "portico-0.6.0-aarch64-apple-darwin.tar.gz",
-        "size": 7630227
+        "name": "portico-0.7.0-aarch64-apple-darwin.tar.gz",
+        "size": 7935630
       },
       {
-        "name": "portico-0.6.0-aarch64-unknown-linux-gnu.tar.gz",
-        "size": 8818022
+        "name": "portico-0.7.0-aarch64-unknown-linux-gnu.tar.gz",
+        "size": 9126108
       },
       {
-        "name": "portico-0.6.0-aarch64-unknown-linux-musl.tar.gz",
-        "size": 8806823
+        "name": "portico-0.7.0-aarch64-unknown-linux-musl.tar.gz",
+        "size": 9110539
       },
       {
-        "name": "portico-0.6.0-x86_64-apple-darwin.tar.gz",
-        "size": 8295840
+        "name": "portico-0.7.0-x86_64-apple-darwin.tar.gz",
+        "size": 8642763
       },
       {
-        "name": "portico-0.6.0-x86_64-pc-windows-msvc.zip",
-        "size": 8839543
+        "name": "portico-0.7.0-x86_64-pc-windows-msvc.zip",
+        "size": 9256368
       },
       {
-        "name": "portico-0.6.0-x86_64-unknown-linux-gnu.tar.gz",
-        "size": 9465281
+        "name": "portico-0.7.0-x86_64-unknown-linux-gnu.tar.gz",
+        "size": 9812096
       },
       {
-        "name": "portico-0.6.0-x86_64-unknown-linux-musl.tar.gz",
-        "size": 9598980
+        "name": "portico-0.7.0-x86_64-unknown-linux-musl.tar.gz",
+        "size": 9947062
       },
       {
-        "name": "Portico_0.6.0_aarch64.AppImage",
-        "size": 86694408
+        "name": "Portico_0.7.0_aarch64.AppImage",
+        "size": 86985224
       },
       {
-        "name": "Portico_0.6.0_amd64.AppImage",
-        "size": 89160184
+        "name": "Portico_0.7.0_amd64.AppImage",
+        "size": 89475576
       },
       {
-        "name": "Portico_0.6.0_amd64.deb",
-        "size": 11706162
+        "name": "Portico_0.7.0_amd64.deb",
+        "size": 12063720
       },
       {
-        "name": "Portico_0.6.0_arm64.deb",
-        "size": 11142178
+        "name": "Portico_0.7.0_arm64.deb",
+        "size": 11469560
       },
       {
-        "name": "Portico_0.6.0_universal-unsigned.dmg",
-        "size": 20085433
+        "name": "Portico_0.7.0_universal-unsigned.dmg",
+        "size": 20750806
       },
       {
-        "name": "Portico_0.6.0_x64-setup.exe",
-        "size": 9940629
+        "name": "Portico_0.7.0_x64-setup.exe",
+        "size": 10218890
       },
       {
         "name": "SHA256SUMS",

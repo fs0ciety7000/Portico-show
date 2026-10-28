@@ -4,7 +4,7 @@
 # do not edit it in the AUR: the release workflow overwrites it.
 
 pkgname=portico-gui-bin
-pkgver=0.6.0
+pkgver=0.7.0
 pkgrel=1
 pkgdesc='Local-first, keyboard-first SSH session manager (desktop app)'
 arch=('x86_64' 'aarch64')
@@ -38,8 +38,8 @@ source_aarch64=("${url}/releases/download/v${pkgver}/Portico_${pkgver}_arm64.deb
 noextract=("Portico_${pkgver}_amd64.deb" "Portico_${pkgver}_arm64.deb")
 sha256sums=('abde13588e91786b62dfcc6c516825e8c15b8515f18f165a5f269fda9ad2f813'
             'cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30')
-sha256sums_x86_64=('3da7db8654042a823eb453a3706afd56ddafd3b0127cda38f3fc7e39126467a4')
-sha256sums_aarch64=('3fc79a60b5089fe61e3a5cf9c9279aeba164538372da67e2e844f00361131d43')
+sha256sums_x86_64=('33e5a5566e2fa68782387d957976fb95bcc1bb14bb701c009472b828c057a7e5')
+sha256sums_aarch64=('60389a4a29816bd504228f47e4a028abb7876392945b93e60db57653369ba402')
 
 package() {
   local deb
